@@ -7,10 +7,12 @@ numbers = [
 ]
 
 spaces = [
-    " ", "\n", "\t"
+    " ", "\t"
 ]
 
-alfabet = symbols + numbers + spaces
+line_break = ["\n"]
+
+alfabet = symbols + numbers + spaces + line_break
 
 tokens = [
     "int","float","aP","fP","soma","sub","mult","div","erro"
@@ -18,7 +20,7 @@ tokens = [
 
 class Token:
     def __init__(self, value, type, line, cCol, fCol):
-        self.value = value
+        self.value = "".join(value)
         self.type = type
         self.line = line
         self.cCol = cCol
@@ -56,6 +58,8 @@ def identify_token(character, current_token):
             return tokens[7]
     elif character in spaces:
         return "espaco"
+    elif character in line_break:
+        return "quebra"
     return "erro"
 
 def list_result(result):
@@ -71,25 +75,29 @@ with open("teste.txt") as f:
     text = f.read()
     past_token = ""
     for i in text:
-        #print(i,end=" ")
+        print(i,end=" ")
         if character_is_valid(i):
             token = identify_token(i, past_token)
+            #Consertar os caracteres classificados como int antes do .
             if token == tokens[1] and past_token == tokens[0]:
                 for index,fix in enumerate(list(reversed(result))):
-                    if fix == tokens[0] or fix == tokens[1]:
+                    if fix == tokens[0] or fix == tokens[1]: #or fix == "espaco":
                         result[len(result)-1-index] = tokens[1]
                     else:
                         break
-            
-            result.append(token)
-            #print(token)
-            past_token = token
+            if token == "quebra" and past_token == tokens[1]:
+                result.append(tokens[1])
+            else:
+                result.append(token)
+            print(token)
+            if token != "espaco" and token != "quebra":
+                past_token = token
         else:
             result.append(tokens[8])
     
-    #print(f"result: {result}")
+    print(f"text: {text}\nresult: {result}")
 
-    #Arrumar os tokens
+    #Agrupar os tokens
     real_result = []
     past_token = result[0]
     current_token_start = 0
@@ -97,26 +105,22 @@ with open("teste.txt") as f:
     current_token_line = 0
     current_value = []
     for index, token in enumerate(result):
-        if past_token == result[index]:
+        if past_token == token and text[index] != " " and text[index] != "\n":
             current_value.append(text[index])
-            if text[index] == "\n":
-                current_token_line += 1
-                current_token_start = 0
-                current_token_end = 0
-                current_value.pop()
-            elif text[index] == "\t":
-                current_token_end += 4
-                current_value.pop()
-            elif text[index] == " ":
-                current_token_end += 1
-                current_value.pop()
         else:
-            if past_token != "espaco":
+            if past_token != "espaco" and past_token != "quebra" and text[index] != "\n":
                 new_token = Token(current_value, past_token, current_token_line, current_token_start, current_token_end)
                 real_result.append(new_token)
-            current_token_start = index
-            current_value = []
-            current_value.append(text[index])
+            elif past_token == "quebra":
+                current_token_line += 1
+                current_token_end = 0
+                current_token_start = 0
+                past_token = token
+                continue
+            if text[index] != " " and text[index] != "\n":
+                current_value = []
+                current_value.append(text[index])
+                current_token_start = index
         
         current_token_end += 1
         past_token = token
