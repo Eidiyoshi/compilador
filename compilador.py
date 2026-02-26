@@ -20,7 +20,7 @@ tokens = [
 
 class Token:
     def __init__(self, value, type, line, cCol, fCol):
-        self.value = "".join(value)
+        self.value = "".join(value)#Converter a lista de caracteres em string
         self.type = type
         self.line = line
         self.cCol = cCol
