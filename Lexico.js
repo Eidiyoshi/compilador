@@ -165,7 +165,7 @@ function classifyEachCharacter(event) {
             {
                 current_value.push(contents[i]);
             }
-            else if(character_tokens[i] === "queba_linha")
+            else if(character_tokens[i] === "quebra_linha")
             {
                 //console.log("2");
                 current_token_line = current_token_line + 1;
@@ -217,12 +217,34 @@ function classifyEachCharacter(event) {
         }
 
         console.log(real_result);
+
+        fillTable(real_result);
     }
 
     //nao faco ideia doq isso faz, mas aparentemente é necessario pra ler o arquivo
     reader.readAsText(files[0])
     
     return real_result;
+}
+
+//Preenche a tabela com o resultado
+function fillTable(tokens) {
+    const tbody = document.querySelector("#tokensTable tbody");
+    tbody.innerHTML = ""; //limpa tabela antes
+
+    tokens.forEach(t => {
+        const tr = document.createElement("tr");
+
+        tr.innerHTML = `
+            <td>${t.token}</td>
+            <td>${t.value}</td>
+            <td>${t.line}</td>
+            <td>${t.start}</td>
+            <td>${t.end}</td>
+        `;
+
+        tbody.appendChild(tr);
+    });
 }
 
 var input = document.querySelector("#abcdef");

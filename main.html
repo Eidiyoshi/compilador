@@ -2,11 +2,35 @@
 <head>
     <meta charset="UTF-8">
     <title>Compilador</title>
+    <link rel="stylesheet" href="style.css">
 </head>
 
 <body>
-    <form>
-        <input type="file" id="abcdef"/>
-    </form>
+    <div class="container">
+        <h1>Analisador Léxico</h1>
+
+        <section class="upload">
+            <label for="abcdef">Arquivo de entrada:</label>
+            <input type="file" id="abcdef"/>
+        </section>
+
+        <section class="result">
+            <h2>Tabela de Tokens</h2>
+
+            <table id="tokensTable">
+                <thead>
+                    <tr>
+                        <th>Token</th>
+                        <th>Value</th>
+                        <th>Line</th>
+                        <th>Start</th>
+                        <th>End</th>
+                    </tr>
+                </thead>
+                <tbody></tbody>
+            </table>
+        </section>
+    </div>
+
     <script src="Lexico.js"></script>
 </body>
