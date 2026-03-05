@@ -1,0 +1,45 @@
+const symbols = [
+    "(",")",".",";","<",">","="
+];
+
+const math_operator = [
+    "+","-","*","/"
+]
+
+const comment = [
+    "/","{","}"
+];
+
+const numbers = [
+    "0","1","2","3","4","5","6","7","8","9"
+];
+
+const letters = [
+    "a","b","c","d","e","f","g","h","i","j","k","l","m","n","o","p","q","r","s","t","u","v","w","x","y","z",
+    "A","B","C","D","E","F","G","H","I","J","K","L","M","N","O","P","Q","R","S","T","U","V","W","X","Y","Z",
+    "_"
+];
+
+const spaces = [
+    " ", "\t", "\r"
+];
+
+const line_break = ["\n"];
+
+const alfabet = symbols.concat(numbers, letters, spaces, line_break, comment, math_operator);
+
+const types = [
+    "int", "boolean"
+];
+
+const reserved = [
+    "program","procedure","read","write","true","false","begin","end","if","then","else","while","do"
+];
+
+reserved = reserved.concat(types);
+
+const tokens = [
+    "identificador_valido","ponto_e_virgula","numero","valor_booleano","abre_parenteses","fecha_parenteses","abre_bloco","fecha_bloco","tipo_inteiro","tipo_boolean","atribuicao","operacao_matematica"    
+];
+
+export {symbols, math_operator, comment, numbers, letters, spaces, line_break, alfabet, types, reserved, tokens};
