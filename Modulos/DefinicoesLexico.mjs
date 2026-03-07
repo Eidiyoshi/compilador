@@ -44,5 +44,5 @@ const reserved = temp_reserved.concat(types);
 
 const tokens = [
     "identificador_valido","ponto_e_virgula","numero","valor_booleano","abre_parenteses",
-    "fecha_parenteses","atribuicao","operacao_matematica","operacao_relacional","erro"  
+    "fecha_parenteses","atribuicao","operacao_matematica","operacao_relacional","erro","ponto_final"  
 ];
