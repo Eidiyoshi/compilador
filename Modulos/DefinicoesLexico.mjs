@@ -1,5 +1,5 @@
 const symbols = [
-    "(",")",".",";","<",">","="
+    "(",")",".",";","<",">","=",":"
 ];
 
 const math_operator = [
@@ -32,14 +32,17 @@ const types = [
     "int", "boolean"
 ];
 
-const reserved = [
+const temp_reserved = [
     "program","procedure","read","write","true","false","begin","end","if","then","else","while","do"
 ];
 
-reserved = reserved.concat(types);
+const relational_operator = [
+    "<", ">", "=", "<=", ">=", "<>"
+]
+
+const reserved = temp_reserved.concat(types);
 
 const tokens = [
-    "identificador_valido","ponto_e_virgula","numero","valor_booleano","abre_parenteses","fecha_parenteses","abre_bloco","fecha_bloco","tipo_inteiro","tipo_boolean","atribuicao","operacao_matematica"    
+    "identificador_valido","ponto_e_virgula","numero","valor_booleano","abre_parenteses",
+    "fecha_parenteses","atribuicao","operacao_matematica","operacao_relacional","erro"  
 ];
-
-export {symbols, math_operator, comment, numbers, letters, spaces, line_break, alfabet, types, reserved, tokens};

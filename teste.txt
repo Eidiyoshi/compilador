@@ -1,2 +1,17 @@
-123 + 4 - 8.6 * 21.75/324 + 123.-.123*12.3
-45
+{asdasdasdasdasdsadas iehguihsadi 
+
+&$*@$¨@()_!)$**@$
+}
+
+(12345+6789)
+
+true//false
+
+int teste : 12;
+
+(34 < 12)
+
+if (12 <= 34)
+begin
+
+end
