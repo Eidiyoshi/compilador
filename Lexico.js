@@ -46,7 +46,7 @@ const reserved = temp_reserved.concat(types);
 const tokens = [
     "identificador_valido","ponto_e_virgula","numero","valor_booleano","abre_parenteses",
     "fecha_parenteses","atribuicao","operacao_matematica","operacao_relacional","identificador_muito_longo",
-    "ponto_final","virgula","dois_pontos","identificador_invalido"
+    "ponto_final","virgula","dois_pontos","identificador_invalido","comentario_nao_encerrado"
 ];
 
 
@@ -136,7 +136,8 @@ function identifyToken(event) {
             }
             else if(current_char === "{")
             {
-                
+                beginning_of_comment_position = line_position;
+                beginning_of_comment_line = current_line;
                 if(current_token !== "")
                 {
                     if((current_token === tokens[2] || current_token === tokens[0]) && current_string.length > max_length)//numero e identificador
@@ -166,7 +167,7 @@ function identifyToken(event) {
                 current_string = "";
                 console.log("Comentario encontrado na linha " + current_line + " na posicao " + line_position);
                 var aux = current_char;
-                while(aux !== "}" && current_position <= contents.length)
+                while(aux !== "}")
                 {
                     aux = contents[current_position];
                     if(aux === "\n") 
@@ -176,6 +177,18 @@ function identifyToken(event) {
                     }
                     current_position++;
                     line_position++;
+                    if(current_position > contents.length)
+                    {
+                        console.log("salvando " + tokens[9] + " " + current_string);
+                        errors.push({
+                            token: tokens[14],//erro
+                            lexema: "Nan",
+                            linha: beginning_of_comment_line,
+                            comeco: beginning_of_comment_position,
+                            fim: line_position
+                        });
+                        break;
+                    }
                 }
                 console.log("Comentario encerrado na linha " + current_line + " na posicao " + line_position-1);
             }
