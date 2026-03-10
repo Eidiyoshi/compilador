@@ -45,8 +45,8 @@ const reserved = temp_reserved.concat(types);
 
 const tokens = [
     "identificador_valido","ponto_e_virgula","numero","valor_booleano","abre_parenteses",
-    "fecha_parenteses","atribuicao","operacao_matematica","operacao_relacional","erro",
-    "ponto_final","virgula","dois_pontos"
+    "fecha_parenteses","atribuicao","operacao_matematica","operacao_relacional","identificador_muito_longo",
+    "ponto_final","virgula","dois_pontos","identificador_invalido"
 ];
 
 
@@ -105,6 +105,7 @@ function identifyToken(event) {
     var files = event.target.files
     var reader = new FileReader()
     var real_result = []
+    var errors = []
     reader.onload = function() {
         var current_string = "";
         var current_token = "";
@@ -141,7 +142,7 @@ function identifyToken(event) {
                     if((current_token === tokens[2] || current_token === tokens[0]) && current_string.length > max_length)//numero e identificador
                     {
                         console.log("salvando " + tokens[9] + " " + current_string);
-                        real_result.push({
+                        errors.push({
                             token: tokens[9],//erro
                             lexema: current_string,
                             linha: current_line,
@@ -277,7 +278,7 @@ function identifyToken(event) {
                             if((current_token === tokens[2] || current_token === tokens[0]) && current_string.length > max_length)//numero e identificador
                             {
                                 console.log("salvando " + tokens[9] + " " + current_string);
-                                real_result.push({
+                                errors.push({
                                     token: tokens[9],//erro
                                     lexema: current_string,
                                     linha: current_line,
@@ -307,7 +308,7 @@ function identifyToken(event) {
                             if((current_token === tokens[2] || current_token === tokens[0]) && current_string.length > max_length)//numero e identificador
                             {
                                 console.log("salvando " + tokens[9] + " " + current_string);
-                                real_result.push({
+                                errors.push({
                                     token: tokens[9],//erro
                                     lexema: current_string,
                                     linha: current_line,
@@ -347,7 +348,7 @@ function identifyToken(event) {
                             if((current_token === tokens[2] || current_token === tokens[0]) && current_string.length > max_length)//numero e identificador
                             {
                                 console.log("salvando " + tokens[9] + " " + current_string);
-                                real_result.push({
+                                errors.push({
                                     token: tokens[9],//erro
                                     lexema: current_string,
                                     linha: current_line,
@@ -387,7 +388,7 @@ function identifyToken(event) {
                             if((current_token === tokens[2] || current_token === tokens[0]) && current_string.length > max_length)//numero e identificador
                             {
                                 console.log("salvando " + tokens[9] + " " + current_string);
-                                real_result.push({
+                                errors.push({
                                     token: tokens[9],//erro
                                     lexema: current_string,
                                     linha: current_line,
@@ -427,7 +428,7 @@ function identifyToken(event) {
                             if((current_token === tokens[2] || current_token === tokens[0]) && current_string.length > max_length)//numero e identificador
                             {
                                 console.log("salvando " + tokens[9] + " " + current_string);
-                                real_result.push({
+                                errors.push({
                                     token: tokens[9],//erro
                                     lexema: current_string,
                                     linha: current_line,
@@ -467,7 +468,7 @@ function identifyToken(event) {
                             if((current_token === tokens[2] || current_token === tokens[0]) && current_string.length > max_length)//numero e identificador
                             {
                                 console.log("salvando " + tokens[9] + " " + current_string);
-                                real_result.push({
+                                errors.push({
                                     token: tokens[9],//erro
                                     lexema: current_string,
                                     linha: current_line,
@@ -528,7 +529,7 @@ function identifyToken(event) {
                             if((current_token === tokens[2] || current_token === tokens[0]) && current_string.length > max_length)//numero e identificador
                             {
                                 console.log("salvando " + tokens[9] + " " + current_string);
-                                real_result.push({
+                                errors.push({
                                     token: tokens[9],//erro
                                     lexema: current_string,
                                     linha: current_line,
@@ -569,7 +570,7 @@ function identifyToken(event) {
                             if((current_token === tokens[2] || current_token === tokens[0]) && current_string.length > max_length)//numero e identificador
                             {
                                 console.log("salvando " + tokens[9] + " " + current_string);
-                                real_result.push({
+                                errors.push({
                                     token: tokens[9],//erro
                                     lexema: current_string,
                                     linha: current_line,
@@ -636,7 +637,7 @@ function identifyToken(event) {
                             if((current_token === tokens[2] || current_token === tokens[0]) && current_string.length > max_length)//numero e identificador
                             {
                                 console.log("salvando " + tokens[9] + " " + current_string);
-                                real_result.push({
+                                errors.push({
                                     token: tokens[9],//erro
                                     lexema: current_string,
                                     linha: current_line,
@@ -687,7 +688,7 @@ function identifyToken(event) {
                     if((current_token === tokens[2] || current_token === tokens[0]) && current_string.length > max_length)//numero e identificador
                     {
                         console.log("salvando " + tokens[9] + " " + current_string);
-                        real_result.push({
+                        errors.push({
                             token: tokens[9],//erro
                             lexema: current_string,
                             linha: current_line,
@@ -711,12 +712,13 @@ function identifyToken(event) {
                     current_token = "";
                     current_string = "";
                 }
-                console.log("salvando " + tokens[9] + " " + current_string);
-                real_result.push({
-                    token: tokens[9],//erro
+                console.log("salvando " + tokens[13] + " " + current_string);
+                errors.push({
+                    token: tokens[13],//identificador invalido
                     lexema: current_char,
                     linha: current_line,
-                    comeco: beginning_of_token,
+                    comeco: line_position,
+                    fim: line_position + 1
                 });
                 current_token = "";
                 current_string = "";
@@ -724,7 +726,11 @@ function identifyToken(event) {
             current_position++;
             line_position++;
         }
+        //errors;
+        errors.pop();
+        //real_result
         fillTable(real_result);
+        //usar o errors para ver os erros
     }
     //nao faco ideia doq isso faz, mas aparentemente é necessario pra ler o arquivo
     reader.readAsText(files[0])
