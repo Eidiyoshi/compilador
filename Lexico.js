@@ -100,17 +100,14 @@ function isReserved(value)
 
 
 //Principal
-function identifyToken(event) {
+function identifyToken(text) {
 
-    var files = event.target.files
-    var reader = new FileReader()
     var real_result = []
     var errors = []
-    reader.onload = function() {
         var current_string = "";
         var current_token = "";
 
-        var contents = this.result
+        var contents = text
 
         var current_line = 1;
 
@@ -744,15 +741,34 @@ function identifyToken(event) {
         //real_result
         fillTable(real_result);
         //usar o errors para ver os erros
-    }
+    
     //nao faco ideia doq isso faz, mas aparentemente é necessario pra ler o arquivo
-    reader.readAsText(files[0])
     
     console.log(real_result);
 
     console.log(real_result.join(" "))
 
     //return real_result;
+}
+
+// ler o arquivo colocado
+function readTextFile(event){ 
+    var file = document.getElementById("inputFile").files[0];
+    var reader = new FileReader()
+
+    reader.onload = function(event){
+        text = event.target.result;
+        document.getElementById("inputField").value = text;
+    };
+
+    reader.readAsText(file, "UTF-8");
+}
+
+
+// funcao generica para ler o texto no inputField
+function startAnalyze(){
+    var textInput = document.getElementById("inputField").value
+    identifyToken(textInput)
 }
 
 //Preenche a tabela com o resultado
@@ -775,5 +791,5 @@ function fillTable(tokens) {
     });
 }
 
-var input = document.querySelector("#abcdef");
-input.addEventListener('change', identifyToken, false)
+var input = document.querySelector("#inputFile");
+input.addEventListener('change', readTextFile, false)
