@@ -625,9 +625,9 @@ function identifyToken(text) {
                         }
                         else if(current_char !== "/")
                         {
-                            console.log("salvando " + current_token + " " + current_string);
+                            console.log("salvando " + tokens[7] + " " + current_string);
                             real_result.push({
-                                token: current_token,
+                                token: tokens[7],
                                 lexema: current_string,
                                 linha: current_line,
                                 comeco: line_position,
@@ -635,8 +635,11 @@ function identifyToken(text) {
                             });
                             current_token = "";
                             current_string = "";
-                            current_position--;
-                            //line_position--;
+                            if(!isSpace(contents[current_position+1]))
+                            {
+                                current_position--;
+                                line_position--;
+                            }
                         }
                     }
                     else if(isRelationalOperator(current_char))
