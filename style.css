@@ -56,7 +56,8 @@ tbody tr:nth-child(even) {
 }
 
 textarea {
-    min-width: "900px";
-    max-width: "900px";
-    height: "150px";
+    min-width: 900px;
+    max-width: 900px;
+    height: 150px;
+    background: #eef2f7;
 }
