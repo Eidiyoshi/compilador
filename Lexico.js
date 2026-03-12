@@ -1,6 +1,6 @@
 //Definicoes
 const symbols = [
-    "(",")",".",";","<",">","=",":",","
+    "(",")",".",";","<",">","=",":",",","&"
 ];
 
 const math_operator = [
@@ -46,7 +46,7 @@ const reserved = temp_reserved.concat(types);
 const tokens = [
     "identificador_valido","ponto_e_virgula","numero","valor_booleano","abre_parenteses",
     "fecha_parenteses","atribuicao","operacao_matematica","operacao_relacional","identificador_muito_longo",
-    "ponto_final","virgula","dois_pontos","identificador_invalido","comentario_nao_encerrado"
+    "ponto_final","virgula","dois_pontos","identificador_invalido","comentario_nao_encerrado","e_comercial"
 ];
 
 
@@ -128,6 +128,33 @@ function identifyToken(text) {
 
             if(current_char === "\n") 
             {
+                if(current_token !== "")
+                {
+                    if((current_token === tokens[2] || current_token === tokens[0]) && current_string.length > max_length)//numero e identificador
+                    {
+                        console.log("salvando " + tokens[9] + " " + current_string);
+                        errors.push({
+                            token: tokens[9],//erro
+                            lexema: current_string,
+                            linha: current_line,
+                            comeco: beginning_of_token,
+                            fim: line_position
+                        });
+                    }
+                    else
+                    {
+                        console.log("salvando " + current_token + " " + current_string);
+                        real_result.push({
+                            token: current_token,
+                            lexema: current_string,
+                            linha: current_line,
+                            comeco: beginning_of_token,
+                            fim: line_position
+                        });
+                    }
+                }
+                current_token = "";
+                current_string = "";
                 current_line++;
                 line_position = -1;
             }
@@ -344,6 +371,46 @@ function identifyToken(text) {
                         real_result.push({
                             token: tokens[1],//ponto_e_virgula
                             lexema: ";",
+                            linha: current_line,
+                            comeco: line_position,
+                            fim: line_position + 1
+                        });
+                        current_token = "";
+                        current_string = "";
+                    }
+                    else if(current_char === "&")
+                    {
+                        if(current_token !== "")
+                        {
+                            if((current_token === tokens[2] || current_token === tokens[0]) && current_string.length > max_length)//numero e identificador
+                            {
+                                console.log("salvando " + tokens[9] + " " + current_string);
+                                errors.push({
+                                    token: tokens[9],//erro
+                                    lexema: current_string,
+                                    linha: current_line,
+                                    comeco: beginning_of_token,
+                                    fim: line_position
+                                });
+                            }
+                            else
+                            {
+                                console.log("salvando " + current_token + " " + current_string);
+                                real_result.push({
+                                    token: current_token,
+                                    lexema: current_string,
+                                    linha: current_line,
+                                    comeco: beginning_of_token,
+                                    fim: line_position
+                                });
+                            }
+                            current_token = "";
+                            current_string = "";
+                            //line_position++;
+                        }
+                        real_result.push({
+                            token: tokens[15],//e_comercial
+                            lexema: "&",
                             linha: current_line,
                             comeco: line_position,
                             fim: line_position + 1
