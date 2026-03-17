@@ -62,3 +62,8 @@ textarea {
     height: 150px;
     background: #eef2f7;
 }
+
+.error {
+    background-color: #fdecea;
+    color: #b71c1c;
+}

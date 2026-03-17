@@ -807,9 +807,10 @@ function identifyToken(text) {
             line_position++;
         }
         //errors;
-        errors.pop();
+        //errors.pop();
         //real_result
         fillTable(real_result);
+        fillErrors(errors);
         //usar o errors para ver os erros
     
     //nao faco ideia doq isso faz, mas aparentemente é necessario pra ler o arquivo
@@ -842,11 +843,11 @@ function startAnalyze(){
 }
 
 //Preenche a tabela com o resultado
-function fillTable(tokens) {
+function fillTable(real_result) {
     const tbody = document.querySelector("#tokensTable tbody");
     tbody.innerHTML = ""; //limpa tabela antes
 
-    tokens.forEach(t => {
+    real_result.forEach(t => {
         const tr = document.createElement("tr");
 
         tr.innerHTML = `
@@ -855,6 +856,26 @@ function fillTable(tokens) {
             <td>${t.linha}</td>
             <td>${t.comeco}</td>
             <td>${t.fim}</td>
+        `;
+
+        tbody.appendChild(tr);
+    });
+}
+
+//Faz a mesma coisa que fillTable mas só com os erros encontrados
+//(se for melhor dá pra juntar tudo em uma função só depois)
+function fillErrors(errors) {
+    const tbody = document.querySelector("#tokensTable tbody");
+
+    errors.forEach(t => {
+        const tr = document.createElement("tr");
+
+        tr.innerHTML = `
+            <td class="error">${t.token}</td>
+            <td class="error">${t.lexema}</td>
+            <td class="error">${t.linha}</td>
+            <td class="error">${t.comeco}</td>
+            <td class="error">${t.fim}</td>
         `;
 
         tbody.appendChild(tr);
