@@ -807,7 +807,7 @@ function identifyToken(text) {
             line_position++;
         }
         //errors;
-        //errors.pop();
+        errors.pop();
         //real_result
         fillTable(real_result);
         fillErrors(errors);
