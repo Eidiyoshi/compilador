@@ -251,9 +251,16 @@ function identifyToken(text) {
                     {
                         if(!isDigit(current_char))
                         {
+                            while(!isSeparator(contents[current_position]))
+                            {
+                                current_char = contents[current_position];
+                                current_string += current_char;
+                                current_position++;
+                                line_position++;
+                            }
                             console.log("salvando " + current_token + " " + current_string);
-                            real_result.push({
-                                token: tokens[2],
+                            errors.push({
+                                token: tokens[13],
                                 lexema: current_string,
                                 linha: current_line,
                                 comeco: beginning_of_token,
@@ -261,6 +268,8 @@ function identifyToken(text) {
                             });
                             current_token = "";
                             current_string = "";
+                            current_position--;
+                            line_position--;
                         }
                         else
                         {
@@ -817,7 +826,7 @@ function identifyToken(text) {
     
     console.log(real_result);
 
-    console.log(real_result.join(" "))
+    //console.log(real_result.join(" "))
 
     //return real_result;
 }
