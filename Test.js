@@ -1,14 +1,8 @@
-var test = [];
+var test = 1;
 
 function func(asd)
 {
-    asd.push({
-        token: "token",
-        lexema: "poi",
-        linha: 1,
-        comeco: 1,
-        fim: 1
-    });
+    test++;
 }
 
 func(test);

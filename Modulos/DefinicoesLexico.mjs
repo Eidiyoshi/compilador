@@ -47,3 +47,7 @@ const tokens = [
     "fecha_parenteses","atribuicao","operacao_matematica","operacao_relacional","identificador_muito_longo",
     "ponto_final","virgula","dois_pontos","identificador_invalido","comentario_nao_encerrado","e_comercial"
 ];
+
+var identifiers = [];
+
+export { symbols, math_operator, comment, numbers, letters, spaces, alfabet, types, temp_reserved, relational_operator, reserved, tokens, identifiers }

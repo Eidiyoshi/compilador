@@ -1,3 +1,5 @@
+import { symbols, math_operator, comment, numbers, letters, spaces, alfabet, types, temp_reserved, relational_operator, reserved, tokens, identifiers } from "./Modulos/DefinicoesLexico.mjs"
+
 function isDigit(value) 
 {
     return value >= "0" && value <= "9";
@@ -43,3 +45,9 @@ function isReserved(value)
     return reserved.includes(value);
 }
 
+function isIdentifier(value)
+{
+    return identifiers.includes(value);
+}
+
+export { isDigit, isLetter, isSpace, isSymbol, isMathOperator, isRelationalOperator, isInAlfabet, isSeparator, isReserved, isIdentifier }
