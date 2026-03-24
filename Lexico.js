@@ -809,8 +809,8 @@ function identifyToken(text) {
         //errors;
         errors.pop();
         //real_result
-        fillTable(real_result);
         fillErrors(errors);
+        fillTable(real_result);
         //usar o errors para ver os erros
     
     //nao faco ideia doq isso faz, mas aparentemente é necessario pra ler o arquivo
@@ -845,7 +845,6 @@ function startAnalyze(){
 //Preenche a tabela com o resultado
 function fillTable(real_result) {
     const tbody = document.querySelector("#tokensTable tbody");
-    tbody.innerHTML = ""; //limpa tabela antes
 
     real_result.forEach(t => {
         const tr = document.createElement("tr");
@@ -866,6 +865,7 @@ function fillTable(real_result) {
 //(se for melhor dá pra juntar tudo em uma função só depois)
 function fillErrors(errors) {
     const tbody = document.querySelector("#tokensTable tbody");
+    tbody.innerHTML = ""; //limpa tabela antes
 
     errors.forEach(t => {
         const tr = document.createElement("tr");
