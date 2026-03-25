@@ -1,104 +1,31 @@
-//Definicoes
-const symbols = [
-    "(",")",".",";","<",">","=",":",",","&"
-];
+import { tokens, identifiers } from "./Modulos/DefinicoesLexico.mjs"
+import { isDigit, isLetter, isSpace, isMathOperator, isRelationalOperator, isInAlfabet, isSeparator, isReserved, isIdentifier } from "./Modulos/Comparadores.mjs"
 
-const math_operator = [
-    "+","-","*","/"
-]
-
-const comment = [
-    "/","{","}"
-];
-
-const numbers = [
-    "0","1","2","3","4","5","6","7","8","9"
-];
-
-const letters = [
-    "a","b","c","d","e","f","g","h","i","j","k","l","m","n","o","p","q","r","s","t","u","v","w","x","y","z",
-    "A","B","C","D","E","F","G","H","I","J","K","L","M","N","O","P","Q","R","S","T","U","V","W","X","Y","Z",
-    "_"
-];
-
-const spaces = [
-    " ", "\t", "\r"
-];
-
-const line_break = ["\n"];
-
-const alfabet = symbols.concat(numbers, letters, spaces, line_break, comment, math_operator);
-
-const types = [
-    "int", "boolean", "var"
-];
-
-const temp_reserved = [
-    "program","procedure","read","write","true","false","begin","end","if","then","else","while","do"
-];
-
-const relational_operator = [
-    "<", ">", "=", "<=", ">=", "<>"
-]
-
-const reserved = temp_reserved.concat(types);
-
-const tokens = [
-    "identificador_valido","ponto_e_virgula","numero","valor_booleano","abre_parenteses",
-    "fecha_parenteses","atribuicao","operacao_matematica","operacao_relacional","identificador_muito_longo",
-    "ponto_final","virgula","dois_pontos","identificador_invalido","comentario_nao_encerrado","e_comercial"
-];
-
-
-
-//Comparadores
-function isDigit(value) 
+//Funcoes
+function pushToken(array, token, current_string, current_line, beginning_of_token, line_position)
 {
-    return value >= "0" && value <= "9";
+    array.push({
+        token: token,
+        lexema: current_string,
+        linha: current_line,
+        comeco: beginning_of_token,
+        fim: line_position
+    });
 }
 
-function isLetter(value) 
+function checkIfEnded(current_token, current_string, real_result, errors, current_line, beginning_of_token, line_position, max_length)
 {
-    return value >= "a" && value <= "z" || value >= "A" && value <= "Z" || value === "_";
+    if((current_token === tokens[2] || current_token === tokens[0]) && current_string.length > max_length)//numero e identificador
+    {
+        console.log("salvando " + tokens[9] + " " + current_string);
+        pushToken(errors, tokens[9], current_string, current_line, beginning_of_token, line_position);
+    }
+    else
+    {
+        console.log("salvando " + current_token + " " + current_string);
+        pushToken(real_result, current_token, current_string, current_line, beginning_of_token, line_position);
+    }
 }
-
-function isSpace(value) 
-{
-    return spaces.includes(value);
-}
-
-function isSymbol(value) 
-{
-    return symbols.includes(value);
-}
-
-function isMathOperator(value) 
-{
-    return math_operator.includes(value);
-}
-
-function isRelationalOperator(value)
-{
-    return relational_operator.includes(value);
-}
-
-function isInAlfabet(value)
-{
-    return symbols.includes(value) || spaces.includes(value) || isDigit(value) || isLetter(value) || isMathOperator(value) || comment.includes(value) || line_break.includes(value);
-}
-
-function isSeparator(value)
-{
-    return symbols.includes(value) || spaces.includes(value) || line_break.includes(value) || math_operator.includes(value);
-}
-
-function isReserved(value)
-{
-    return reserved.includes(value);
-}
-
-
-
 //Principal
 function identifyToken(text) {
 
@@ -130,28 +57,7 @@ function identifyToken(text) {
             {
                 if(current_token !== "")
                 {
-                    if((current_token === tokens[2] || current_token === tokens[0]) && current_string.length > max_length)//numero e identificador
-                    {
-                        console.log("salvando " + tokens[9] + " " + current_string);
-                        errors.push({
-                            token: tokens[9],//erro
-                            lexema: current_string,
-                            linha: current_line,
-                            comeco: beginning_of_token,
-                            fim: line_position
-                        });
-                    }
-                    else
-                    {
-                        console.log("salvando " + current_token + " " + current_string);
-                        real_result.push({
-                            token: current_token,
-                            lexema: current_string,
-                            linha: current_line,
-                            comeco: beginning_of_token,
-                            fim: line_position
-                        });
-                    }
+                    checkIfEnded(current_token, current_string, real_result, errors, current_line, beginning_of_token, line_position, max_length)
                 }
                 current_token = "";
                 current_string = "";
@@ -164,28 +70,7 @@ function identifyToken(text) {
                 beginning_of_comment_line = current_line;
                 if(current_token !== "")
                 {
-                    if((current_token === tokens[2] || current_token === tokens[0]) && current_string.length > max_length)//numero e identificador
-                    {
-                        console.log("salvando " + tokens[9] + " " + current_string);
-                        errors.push({
-                            token: tokens[9],//erro
-                            lexema: current_string,
-                            linha: current_line,
-                            comeco: beginning_of_token,
-                            fim: line_position
-                        });
-                    }
-                    else
-                    {
-                        console.log("salvando " + current_token + " " + current_string);
-                        real_result.push({
-                            token: current_token,
-                            lexema: current_string,
-                            linha: current_line,
-                            comeco: beginning_of_token,
-                            fim: line_position
-                        });
-                    }
+                    checkIfEnded(current_token, current_string, real_result, errors, current_line, beginning_of_token, line_position, max_length)
                 }
                 current_token = "";
                 current_string = "";
@@ -204,13 +89,7 @@ function identifyToken(text) {
                     if(current_position > contents.length)
                     {
                         console.log("salvando " + tokens[9] + " " + current_string);
-                        errors.push({
-                            token: tokens[14],//erro
-                            lexema: "Nan",
-                            linha: beginning_of_comment_line,
-                            comeco: beginning_of_comment_position,
-                            fim: line_position
-                        });
+                        pushToken(errors, tokens[14], "Nan", beginning_of_comment_line, beginning_of_comment_position, line_position);
                         break;
                     }
                 }
@@ -222,16 +101,7 @@ function identifyToken(text) {
                 {
                     if(current_token === tokens[8]) // operacao_relacional
                     {
-                        console.log("salvando " + current_token + " " + current_string);
-                        real_result.push({
-                            token: current_token,
-                            lexema: current_string,
-                            linha: current_line,
-                            comeco: beginning_of_token,
-                            fim: line_position
-                        });
-                        current_token = "";
-                        current_string = "";
+                        pushToken(real_result, current_token, current_string, current_line, beginning_of_token, line_position);
                     }
                     if(current_token === "")
                     {
@@ -258,14 +128,7 @@ function identifyToken(text) {
                                 current_position++;
                                 line_position++;
                             }
-                            console.log("salvando " + current_token + " " + current_string);
-                            errors.push({
-                                token: tokens[13],
-                                lexema: current_string,
-                                linha: current_line,
-                                comeco: beginning_of_token,
-                                fim: line_position
-                            });
+                            pushToken(errors, tokens[13], current_string, current_line, beginning_of_token, line_position);
                             current_token = "";
                             current_string = "";
                             current_position--;
@@ -286,27 +149,13 @@ function identifyToken(text) {
                                 if(current_string === "true" || current_string === "false")
                                 {
                                     current_token = tokens[3]; // Literal booleano
-                                    console.log("salvando " + current_token + " " + current_string);
-                                    real_result.push({
-                                        token: current_token,
-                                        lexema: current_string,
-                                        linha: current_line,
-                                        comeco: beginning_of_token,
-                                        fim: line_position + 1
-                                    });
+                                    pushToken(real_result, current_token, current_string, current_line, beginning_of_token, line_position);
                                     current_token = "";
                                     current_string = "";
                                 }
                                 else
                                 {
-                                    console.log("salvando " + current_string + " " + current_string);
-                                    real_result.push({
-                                        token: current_string,
-                                        lexema: current_string,
-                                        linha: current_line,
-                                        comeco: beginning_of_token,
-                                        fim: line_position+1
-                                    });
+                                    pushToken(real_result, current_token, current_string, current_line, beginning_of_token, line_position);
                                     current_token = "";
                                     current_string = "";
                                 }
@@ -321,28 +170,7 @@ function identifyToken(text) {
                     {
                         if(current_token !== "")
                         {
-                            if((current_token === tokens[2] || current_token === tokens[0]) && current_string.length > max_length)//numero e identificador
-                            {
-                                console.log("salvando " + tokens[9] + " " + current_string);
-                                errors.push({
-                                    token: tokens[9],//erro
-                                    lexema: current_string,
-                                    linha: current_line,
-                                    comeco: beginning_of_token,
-                                    fim: line_position
-                                });
-                            }
-                            else
-                            {
-                                console.log("salvando " + current_token + " " + current_string);
-                                real_result.push({
-                                    token: current_token,
-                                    lexema: current_string,
-                                    linha: current_line,
-                                    comeco: beginning_of_token,
-                                    fim: line_position
-                                });
-                            }
+                            checkIfEnded(current_token, current_string, real_result, errors, current_line, beginning_of_token, line_position, max_length)
                         }
                         current_token = "";
                         current_string = "";
@@ -351,39 +179,12 @@ function identifyToken(text) {
                     {
                         if(current_token !== "")
                         {
-                            if((current_token === tokens[2] || current_token === tokens[0]) && current_string.length > max_length)//numero e identificador
-                            {
-                                console.log("salvando " + tokens[9] + " " + current_string);
-                                errors.push({
-                                    token: tokens[9],//erro
-                                    lexema: current_string,
-                                    linha: current_line,
-                                    comeco: beginning_of_token,
-                                    fim: line_position
-                                });
-                            }
-                            else
-                            {
-                                console.log("salvando " + current_token + " " + current_string);
-                                real_result.push({
-                                    token: current_token,
-                                    lexema: current_string,
-                                    linha: current_line,
-                                    comeco: beginning_of_token,
-                                    fim: line_position
-                                });
-                            }
+                            checkIfEnded(current_token, current_string, real_result, errors, current_line, beginning_of_token, line_position, max_length)
                             current_token = "";
                             current_string = "";
                             //line_position++;
                         }
-                        real_result.push({
-                            token: tokens[1],//ponto_e_virgula
-                            lexema: ";",
-                            linha: current_line,
-                            comeco: line_position,
-                            fim: line_position + 1
-                        });
+                        pushToken(real_result, tokens[1], ";", current_line, line_position, line_position+1);
                         current_token = "";
                         current_string = "";
                     }
@@ -391,39 +192,12 @@ function identifyToken(text) {
                     {
                         if(current_token !== "")
                         {
-                            if((current_token === tokens[2] || current_token === tokens[0]) && current_string.length > max_length)//numero e identificador
-                            {
-                                console.log("salvando " + tokens[9] + " " + current_string);
-                                errors.push({
-                                    token: tokens[9],//erro
-                                    lexema: current_string,
-                                    linha: current_line,
-                                    comeco: beginning_of_token,
-                                    fim: line_position
-                                });
-                            }
-                            else
-                            {
-                                console.log("salvando " + current_token + " " + current_string);
-                                real_result.push({
-                                    token: current_token,
-                                    lexema: current_string,
-                                    linha: current_line,
-                                    comeco: beginning_of_token,
-                                    fim: line_position
-                                });
-                            }
+                            checkIfEnded(current_token, current_string, real_result, errors, current_line, beginning_of_token, line_position, max_length)
                             current_token = "";
                             current_string = "";
                             //line_position++;
                         }
-                        real_result.push({
-                            token: tokens[15],//e_comercial
-                            lexema: "&",
-                            linha: current_line,
-                            comeco: line_position,
-                            fim: line_position + 1
-                        });
+                        pushToken(real_result, tokens[15], "&", current_line, line_position, line_position+1);
                         current_token = "";
                         current_string = "";
                     }
@@ -431,39 +205,12 @@ function identifyToken(text) {
                     {
                         if(current_token !== "")
                         {
-                            if((current_token === tokens[2] || current_token === tokens[0]) && current_string.length > max_length)//numero e identificador
-                            {
-                                console.log("salvando " + tokens[9] + " " + current_string);
-                                errors.push({
-                                    token: tokens[9],//erro
-                                    lexema: current_string,
-                                    linha: current_line,
-                                    comeco: beginning_of_token,
-                                    fim: line_position
-                                });
-                            }
-                            else
-                            {
-                                console.log("salvando " + current_token + " " + current_string);
-                                real_result.push({
-                                    token: current_token,
-                                    lexema: current_string,
-                                    linha: current_line,
-                                    comeco: beginning_of_token,
-                                    fim: line_position
-                                });
-                            }
+                            checkIfEnded(current_token, current_string, real_result, errors, current_line, beginning_of_token, line_position, max_length)
                             current_token = "";
                             current_string = "";
                             //line_position++;
                         }
-                        real_result.push({
-                            token: tokens[4],//abre_parenteses
-                            lexema: "(",
-                            linha: current_line,
-                            comeco: line_position,
-                            fim: line_position + 1
-                        });
+                        pushToken(real_result, tokens[4], "(", current_line, line_position, line_position+1);
                         current_token = "";
                         current_string = "";
                     }
@@ -471,39 +218,12 @@ function identifyToken(text) {
                     {
                         if(current_token !== "")
                         {
-                            if((current_token === tokens[2] || current_token === tokens[0]) && current_string.length > max_length)//numero e identificador
-                            {
-                                console.log("salvando " + tokens[9] + " " + current_string);
-                                errors.push({
-                                    token: tokens[9],//erro
-                                    lexema: current_string,
-                                    linha: current_line,
-                                    comeco: beginning_of_token,
-                                    fim: line_position
-                                });
-                            }
-                            else
-                            {
-                                console.log("salvando " + current_token + " " + current_string);
-                                real_result.push({
-                                    token: current_token,
-                                    lexema: current_string,
-                                    linha: current_line,
-                                    comeco: beginning_of_token,
-                                    fim: line_position
-                                });
-                            }
+                            checkIfEnded(current_token, current_string, real_result, errors, current_line, beginning_of_token, line_position, max_length)
                             current_token = "";
                             current_string = "";
                             //line_position++;
                         }
-                        real_result.push({
-                            token: tokens[11],//virgula
-                            lexema: ",",
-                            linha: current_line,
-                            comeco: line_position,
-                            fim: line_position + 1
-                        });
+                        pushToken(real_result, tokens[11], ",", current_line, line_position, line_position+1);
                         current_token = "";
                         current_string = "";
                     }
@@ -511,39 +231,12 @@ function identifyToken(text) {
                     {
                         if(current_token !== "")
                         {
-                            if((current_token === tokens[2] || current_token === tokens[0]) && current_string.length > max_length)//numero e identificador
-                            {
-                                console.log("salvando " + tokens[9] + " " + current_string);
-                                errors.push({
-                                    token: tokens[9],//erro
-                                    lexema: current_string,
-                                    linha: current_line,
-                                    comeco: beginning_of_token,
-                                    fim: line_position
-                                });
-                            }
-                            else
-                            {
-                                console.log("salvando " + current_token + " " + current_string);
-                                real_result.push({
-                                    token: current_token,
-                                    lexema: current_string,
-                                    linha: current_line,
-                                    comeco: beginning_of_token,
-                                    fim: line_position
-                                });
-                            }
+                            checkIfEnded(current_token, current_string, real_result, errors, current_line, beginning_of_token, line_position, max_length)
                             current_token = "";
                             current_string = "";
                             //line_position++;
                         }
-                        real_result.push({
-                            token: tokens[10],//ponto_final
-                            lexema: ".",
-                            linha: current_line,
-                            comeco: line_position,
-                            fim: line_position + 1
-                        });
+                        pushToken(real_result, tokens[10], ".", current_line, line_position, line_position+1);
                         current_token = "";
                         current_string = "";
                     }
@@ -553,25 +246,11 @@ function identifyToken(text) {
                         {
                             if((current_token === tokens[2] || current_token === tokens[0]) && current_string.length > max_length)//numero e identificador
                             {
-                                console.log("salvando " + tokens[9] + " " + current_string);
-                                errors.push({
-                                    token: tokens[9],//erro
-                                    lexema: current_string,
-                                    linha: current_line,
-                                    comeco: beginning_of_token,
-                                    fim: line_position
-                                });
+                                pushToken(errors, tokens[9], current_string, current_line, beginning_of_token, line_position);
                             }
                             else
                             {
-                                console.log("salvando " + current_token + " " + current_string);
-                                real_result.push({
-                                    token: current_token,
-                                    lexema: current_string,
-                                    linha: current_line,
-                                    comeco: beginning_of_token,
-                                    fim: line_position
-                                });
+                                pushToken(real_result, current_token, current_string, current_line, beginning_of_token, line_position);
                                 current_token = "";
                                 current_string = ""; 
                             }
@@ -581,14 +260,7 @@ function identifyToken(text) {
                         }
                         if(contents[current_position + 1] === "=")
                         {
-                            console.log("salvando " + tokens[6] + " " + current_string);
-                            real_result.push({
-                                token: tokens[6],//atribuicao
-                                lexema: ":=",
-                                linha: current_line,
-                                comeco: line_position,
-                                fim: line_position + 2
-                            });
+                            pushToken(real_result, tokens[6], ":=", current_line, line_position, line_position+2);
                             current_position++;
                             line_position++;
                             current_token = "";
@@ -596,14 +268,7 @@ function identifyToken(text) {
                         }
                         else
                         {
-                            console.log("salvando " + tokens[12] + " " + current_string);
-                            real_result.push({
-                                token: tokens[12],//dois_pontos
-                                lexema: ":",
-                                linha: current_line,
-                                comeco: line_position,
-                                fim: line_position + 1
-                            });
+                            pushToken(real_result, tokens[12], ":", current_line, line_position, line_position+1);
                             current_token = "";
                             current_string = "";
                         }
@@ -612,39 +277,12 @@ function identifyToken(text) {
                     {
                         if(current_token !== "")
                         {
-                            if((current_token === tokens[2] || current_token === tokens[0]) && current_string.length > max_length)//numero e identificador
-                            {
-                                console.log("salvando " + tokens[9] + " " + current_string);
-                                errors.push({
-                                    token: tokens[9],//erro
-                                    lexema: current_string,
-                                    linha: current_line,
-                                    comeco: beginning_of_token,
-                                    fim: line_position
-                                });
-                            }
-                            else
-                            {
-                                console.log("salvando " + current_token + " " + current_string);
-                                real_result.push({
-                                    token: current_token,
-                                    lexema: current_string,
-                                    linha: current_line,
-                                    comeco: beginning_of_token,
-                                    fim: line_position
-                                });
-                            }
+                            checkIfEnded(current_token, current_string, real_result, errors, current_line, beginning_of_token, line_position, max_length)
                             current_token = "";
                             current_string = "";
                             //line_position++;
                         }
-                        real_result.push({
-                            token: tokens[5],//fecha_parenteses
-                            lexema: ")",
-                            linha: current_line,
-                            comeco: line_position,
-                            fim: line_position + 1
-                        });
+                        pushToken(real_result, tokens[5], ")", current_line, line_position, line_position+1);
                         current_token = "";
                         current_string = "";
                     }
@@ -653,28 +291,7 @@ function identifyToken(text) {
                         console.log("Operador matematico encontrado: " + current_char);
                         if(current_token !== "")
                         {
-                            if((current_token === tokens[2] || current_token === tokens[0]) && current_string.length > max_length)//numero e identificador
-                            {
-                                console.log("salvando " + tokens[9] + " " + current_string);
-                                errors.push({
-                                    token: tokens[9],//erro
-                                    lexema: current_string,
-                                    linha: current_line,
-                                    comeco: beginning_of_token,
-                                    fim: line_position
-                                });
-                            }
-                            else
-                            {
-                                console.log("salvando " + current_token + " " + current_string);
-                                real_result.push({
-                                    token: current_token,
-                                    lexema: current_string,
-                                    linha: current_line,
-                                    comeco: beginning_of_token,
-                                    fim: line_position
-                                });
-                            }
+                            checkIfEnded(current_token, current_string, real_result, errors, current_line, beginning_of_token, line_position, max_length)
                             //line_position++;
                             current_position++;
                             current_token = tokens[7]; // operacao_matematica
@@ -701,14 +318,7 @@ function identifyToken(text) {
                         }
                         else if(current_char !== "/")
                         {
-                            console.log("salvando " + tokens[7] + " " + current_string);
-                            real_result.push({
-                                token: tokens[7],
-                                lexema: current_string,
-                                linha: current_line,
-                                comeco: line_position,
-                                fim: line_position + 1
-                            });
+                            pushToken(real_result, tokens[7], current_string, current_line, beginning_of_token, line_position+1);
                             current_token = "";
                             current_string = "";
                             if(!isSpace(contents[current_position+1]))
@@ -723,28 +333,7 @@ function identifyToken(text) {
                         console.log("Operador relacional encontrado: " + current_char);
                         if(current_token !== "" && current_token !== tokens[8]) // operacao_relacional                      
                         {
-                            if((current_token === tokens[2] || current_token === tokens[0]) && current_string.length > max_length)//numero e identificador
-                            {
-                                console.log("salvando " + tokens[9] + " " + current_string);
-                                errors.push({
-                                    token: tokens[9],//erro
-                                    lexema: current_string,
-                                    linha: current_line,
-                                    comeco: beginning_of_token,
-                                    fim: line_position
-                                });
-                            }
-                            else
-                            {
-                                console.log("salvando " + current_token + " " + current_string);
-                                real_result.push({
-                                    token: current_token,
-                                    lexema: current_string,
-                                    linha: current_line,
-                                    comeco: beginning_of_token,
-                                    fim: line_position
-                                });
-                            }
+                            checkIfEnded(current_token, current_string, real_result, errors, current_line, beginning_of_token, line_position, max_length)
                             //line_position++;
                             //current_position++;
                             current_token = "";
@@ -755,14 +344,7 @@ function identifyToken(text) {
                         beginning_of_token = line_position;
                         if(current_string === "<=" || current_string === ">=" || current_string === "<>")
                         {
-                            console.log("salvando operador relacional composto: " + current_string);
-                            real_result.push({
-                                token: current_string,
-                                lexema: current_string,
-                                linha: current_line,
-                                comeco: beginning_of_token-1,
-                                fim: line_position+1
-                            });
+                            pushToken(real_result, current_string, current_string, current_line, beginning_of_token-1, line_position+1);
                             current_token = "";
                             current_string = "";
                         }
@@ -774,41 +356,13 @@ function identifyToken(text) {
                 console.log("Caractere invalido encontrado: " + current_char);
                 if(current_token !== "") // operacao_relacional                      
                 {
-                    if((current_token === tokens[2] || current_token === tokens[0]) && current_string.length > max_length)//numero e identificador
-                    {
-                        console.log("salvando " + tokens[9] + " " + current_string);
-                        errors.push({
-                            token: tokens[9],//erro
-                            lexema: current_string,
-                            linha: current_line,
-                            comeco: beginning_of_token,
-                            fim: line_position
-                        });
-                    }
-                    else
-                    {
-                        console.log("salvando " + current_token + " " + current_string);
-                        real_result.push({
-                            token: current_token,
-                            lexema: current_string,
-                            linha: current_line,
-                            comeco: beginning_of_token,
-                            fim: line_position
-                        });
-                    }
+                    checkIfEnded(current_token, current_string, real_result, errors, current_line, beginning_of_token, line_position, max_length)
                     //line_position++;
                     //current_position++;
                     current_token = "";
                     current_string = "";
                 }
-                console.log("salvando " + tokens[13] + " " + current_string);
-                errors.push({
-                    token: tokens[13],//identificador invalido
-                    lexema: current_char,
-                    linha: current_line,
-                    comeco: line_position,
-                    fim: line_position + 1
-                });
+                pushToken(errors, tokens[13], current_char, current_line, line_position, line_position+1);
                 current_token = "";
                 current_string = "";
             }
@@ -824,6 +378,8 @@ function identifyToken(text) {
     
     //nao faco ideia doq isso faz, mas aparentemente é necessario pra ler o arquivo
     
+    console.log(errors);
+
     console.log(real_result);
 
     //console.log(real_result.join(" "))
@@ -837,7 +393,7 @@ function readTextFile(event){
     var reader = new FileReader()
 
     reader.onload = function(event){
-        text = event.target.result;
+        const text = event.target.result;
         document.getElementById("inputField").value = text;
     };
 
@@ -846,10 +402,10 @@ function readTextFile(event){
 
 
 // funcao generica para ler o texto no inputField
-function startAnalyze(){
+document.querySelector('#startButton').addEventListener('click', () => {
     var textInput = document.getElementById("inputField").value
     identifyToken(textInput)
-}
+});
 
 //Preenche a tabela com o resultado
 function fillTable(real_result) {

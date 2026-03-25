@@ -1,4 +1,4 @@
-import { symbols, math_operator, comment, numbers, letters, spaces, alfabet, types, temp_reserved, relational_operator, reserved, tokens, identifiers } from "./Modulos/DefinicoesLexico.mjs"
+import { symbols, math_operator, comment, spaces, line_break, relational_operator, reserved, identifiers } from "./DefinicoesLexico.mjs"
 
 function isDigit(value) 
 {
