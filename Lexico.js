@@ -1,6 +1,9 @@
 import { tokens, identifiers } from "./Modulos/DefinicoesLexico.mjs"
 import { isDigit, isLetter, isSpace, isMathOperator, isRelationalOperator, isInAlfabet, isSeparator, isReserved, isIdentifier } from "./Modulos/Comparadores.mjs"
 
+// deletar eventualmente
+import { analisadorSintaxico } from "./Sintaxico.js";
+
 //Funcoes
 function pushToken(array, token, current_string, current_line, beginning_of_token, line_position)
 {
@@ -381,6 +384,12 @@ function identifyToken(text) {
     console.log(errors);
 
     console.log(real_result);
+
+    // ------------------------------------------------------------------------------
+    // eventualmente retirar isso aq, pq o sintaxico esta sendo chamado pelo lexico
+    // o que nao deveria acontecer por excesso de funcao
+    // ------------------------------------------------------------------------------
+    analisadorSintaxico(real_result)
 
     //console.log(real_result.join(" "))
 
