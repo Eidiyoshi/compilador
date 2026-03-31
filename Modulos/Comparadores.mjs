@@ -10,6 +10,11 @@ function isLetter(value)
     return value >= "a" && value <= "z" || value >= "A" && value <= "Z" || value === "_";
 }
 
+function isType(value)
+{
+    return types.includes(value);
+}
+
 function isSpace(value) 
 {
     return spaces.includes(value);

@@ -155,7 +155,7 @@ function identifyToken(text) {
                                 }
                                 else
                                 {
-                                    pushToken(real_result, current_token, current_string, current_line, beginning_of_token, line_position);
+                                    pushToken(real_result, current_string, current_string, current_line, beginning_of_token, line_position);
                                     current_token = "";
                                     current_string = "";
                                 }
