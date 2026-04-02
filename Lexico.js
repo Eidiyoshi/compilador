@@ -2,7 +2,7 @@ import { tokens, identifiers } from "./Modulos/DefinicoesLexico.mjs"
 import { isDigit, isLetter, isSpace, isMathOperator, isRelationalOperator, isInAlfabet, isSeparator, isReserved, isIdentifier } from "./Modulos/Comparadores.mjs"
 
 // deletar eventualmente
-import { analisadorSintaxico } from "./Sintaxico.js";
+import { analisadorSintaxico, pilha } from "./Sintaxico.js";
 
 //Funcoes
 function pushToken(array, token, current_string, current_line, beginning_of_token, line_position)
@@ -390,6 +390,7 @@ function identifyToken(text) {
     // o que nao deveria acontecer por excesso de funcao
     // ------------------------------------------------------------------------------
     analisadorSintaxico(real_result)
+    renderStack([...pilha]);
 
     //console.log(real_result.join(" "))
 
@@ -453,6 +454,18 @@ function fillErrors(errors) {
         `;
 
         tbody.appendChild(tr);
+    });
+}
+
+window.renderStack = function(stack) {
+    const stackView = document.getElementById("stackView");
+    stackView.innerHTML = "";
+
+    stack.forEach(item => {
+        const div = document.createElement("div");
+        div.className = "stack-item";
+        div.textContent = item;
+        stackView.appendChild(div);
     });
 }
 

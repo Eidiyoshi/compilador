@@ -17,10 +17,22 @@ body {
 h1 {
     margin-top: 0;
     text-align: center;
+    font-size: 32px;
+    margin-bottom: 30px;
+}
+
+h2 {
+    margin-bottom: 15px;
+    color: #333;
+}
+
+.editor,
+.result {
+    margin-bottom: 30px;
 }
 
 .upload {
-    margin-bottom: 25px;
+    margin-bottom: 20px;
     padding: 15px;
     background: #eef2f7;
     border-radius: 6px;
@@ -31,8 +43,35 @@ h1 {
     margin-right: 10px;
 }
 
-.result h2 {
-    margin-bottom: 10px;
+textarea {
+    width: 100%;
+    min-height: 180px;
+    padding: 12px;
+    background: #eef2f7;
+    border: 1px solid #ccc;
+    border-radius: 6px;
+    resize: vertical;
+    font-family: monospace;
+    font-size: 14px;
+    box-sizing: border-box;
+}
+
+.button {
+    margin-top: 15px;
+}
+
+button {
+    background: #333;
+    color: white;
+    border: none;
+    padding: 12px 20px;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 14px;
+}
+
+button:hover {
+    background: #555;
 }
 
 table {
@@ -55,15 +94,27 @@ tbody tr:nth-child(even) {
     background-color: #f2f2f2;
 }
 
-
-textarea {
-    min-width: 900px;
-    max-width: 900px;
-    height: 150px;
-    background: #eef2f7;
-}
-
 .error {
     background-color: #fdecea;
     color: #b71c1c;
+}
+
+.stack-view {
+    display: flex;
+    flex-direction: column-reverse;
+    gap: 8px;
+    min-height: 120px;
+    padding: 15px;
+    background: #eef2f7;
+    border-radius: 8px;
+}
+
+.stack-item {
+    background: #333;
+    color: white;
+    padding: 10px;
+    border-radius: 6px;
+    text-align: center;
+    font-family: monospace;
+    font-size: 15px;
 }

@@ -7,25 +7,27 @@
 
 <body>
     <div class="container">
-        <h1>Analisador Léxico</h1>
+        <h1>Compilador</h1>
 
-        <section class="upload">
-            <label for="inputFile">Arquivo de entrada:</label>
-            <input type="file" id="inputFile"/>
+        <section class="editor">
+            <h2>Editor de Código</h2>
+
+            <section class="upload">
+                <label for="inputFile">Arquivo de entrada:</label>
+                <input type="file" id="inputFile"/>
+            </section>
+
+            <section class="text">
+                <textarea name="inputField" id="inputField"></textarea>
+            </section>
+
+            <section class="button">
+                <button id="startButton">Analisar código</button>
+            </section>
         </section>
-
-        <section class="text">
-            <textarea name="inputField" id="inputField"></textarea>
-        </section>
-
-        <section class="button">
-            <button id="startButton">Analisar código</button>
-        </section>
-
-        <section class="text" id="checkSintaxico"></section>
 
         <section class="result">
-            <h2>Tabela de Tokens</h2>
+            <h2>Analisador Léxico</h2>
 
             <table id="tokensTable">
                 <thead>
@@ -33,13 +35,20 @@
                         <th>Token</th>
                         <th>Lexema</th>
                         <th>Linha</th>
-                        <th>Comeco</th>
+                        <th>Começo</th>
                         <th>Fim</th>
                     </tr>
                 </thead>
                 <tbody></tbody>
             </table>
         </section>
+
+        <section class="result">
+            <h2>Analisador Sintático</h2>
+            <div id="stackView" class="stack-view"></div>
+        </section>
+
+        <section class="text" id="checkSintaxico"></section>
     </div>
 
     <script src="Lexico.js" type="module"></script>

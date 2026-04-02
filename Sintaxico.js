@@ -33,6 +33,8 @@ function DeclararVariavel(){
     pilha.push("<identificador_valido>")
     pilha.push("<tipo>")
 
+    window.renderStack([...pilha]);
+
     var erro = 0;
     var iteracoesMax = 0;
     do {
@@ -123,7 +125,7 @@ export function analisadorSintaxico(arrayTokens){
     
 
     while( (fila[0] != "$" ) && (fila.length > 0) ){
-        var topoPilha = pilha.pop()
+        var topoPilha = pilha[pilha.length - 1]; //troquei o pop por isso pq não tava exibindo a pilha
 
         if( topoPilha == "<Variavel>" ) DeclararVariavel();
 
@@ -133,3 +135,5 @@ export function analisadorSintaxico(arrayTokens){
     
     //construirTabelaPreditiva();
 }
+
+export { pilha };
