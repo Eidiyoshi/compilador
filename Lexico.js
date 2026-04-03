@@ -469,5 +469,21 @@ window.renderStack = function(stack) {
     });
 }
 
+window.openTab = function(evt, tabName) {
+    let tabcontent = document.getElementsByClassName("tab-content");
+    let tablinks = document.getElementsByClassName("tab-btn");
+
+    for (let i = 0; i < tabcontent.length; i++) {
+        tabcontent[i].classList.remove("active");
+    }
+
+    for (let i = 0; i < tablinks.length; i++) {
+        tablinks[i].classList.remove("active");
+    }
+
+    document.getElementById(tabName).classList.add("active");
+    evt.currentTarget.classList.add("active");
+}
+
 var input = document.querySelector("#inputFile");
 input.addEventListener('change', readTextFile, false)

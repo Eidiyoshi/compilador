@@ -26,29 +26,38 @@
             </section>
         </section>
 
-        <section class="result">
-            <h2>Analisador Léxico</h2>
+        <div class="tabs">
+            <button class="tab-btn active" onclick="openTab(event, 'Tab1')">Analisador Léxico</button>
+            <button class="tab-btn" onclick="openTab(event, 'Tab2')">Analisador Sintático</button>
+        </div>
 
-            <table id="tokensTable">
-                <thead>
-                    <tr>
-                        <th>Token</th>
-                        <th>Lexema</th>
-                        <th>Linha</th>
-                        <th>Começo</th>
-                        <th>Fim</th>
-                    </tr>
-                </thead>
-                <tbody></tbody>
-            </table>
-        </section>
+        <div id="Tab1" class="tab-content active">
+            <section class="result">
+                <h2>Tabela de Símbolos</h2>
 
-        <section class="result">
-            <h2>Analisador Sintático</h2>
-            <div id="stackView" class="stack-view"></div>
-        </section>
+                <table id="tokensTable">
+                    <thead>
+                        <tr>
+                            <th>Token</th>
+                            <th>Lexema</th>
+                            <th>Linha</th>
+                            <th>Começo</th>
+                            <th>Fim</th>
+                        </tr>
+                    </thead>
+                    <tbody></tbody>
+                </table>
+            </section>
+        </div>
 
-        <section class="text" id="checkSintaxico"></section>
+        <div id="Tab2" class="tab-content">
+            <section class="result">
+                <h2>Pilha de Símbolos</h2>
+                <div id="stackView" class="stack-view"></div>
+            </section>
+
+            <section class="text" id="checkSintaxico"></section>
+        </div>
     </div>
 
     <script src="Lexico.js" type="module"></script>
