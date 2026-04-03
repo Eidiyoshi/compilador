@@ -7,39 +7,57 @@
 
 <body>
     <div class="container">
-        <h1>Analisador Léxico</h1>
+        <h1>Compilador</h1>
 
-        <section class="upload">
-            <label for="inputFile">Arquivo de entrada:</label>
-            <input type="file" id="inputFile"/>
+        <section class="editor">
+            <h2>Editor de Código</h2>
+
+            <section class="upload">
+                <label for="inputFile">Arquivo de entrada:</label>
+                <input type="file" id="inputFile"/>
+            </section>
+
+            <section class="text">
+                <textarea name="inputField" id="inputField"></textarea>
+            </section>
+
+            <section class="button">
+                <button id="startButton">Analisar código</button>
+            </section>
         </section>
 
-        <section class="text">
-            <textarea name="inputField" id="inputField"></textarea>
-        </section>
+        <div class="tabs">
+            <button class="tab-btn active" onclick="openTab(event, 'Tab1')">Analisador Léxico</button>
+            <button class="tab-btn" onclick="openTab(event, 'Tab2')">Analisador Sintático</button>
+        </div>
 
-        <section class="button">
-            <button id="startButton">Analisar código</button>
-        </section>
+        <div id="Tab1" class="tab-content active">
+            <section class="result">
+                <h2>Tabela de Símbolos</h2>
 
-        <section class="text" id="checkSintaxico"></section>
+                <table id="tokensTable">
+                    <thead>
+                        <tr>
+                            <th>Token</th>
+                            <th>Lexema</th>
+                            <th>Linha</th>
+                            <th>Começo</th>
+                            <th>Fim</th>
+                        </tr>
+                    </thead>
+                    <tbody></tbody>
+                </table>
+            </section>
+        </div>
 
-        <section class="result">
-            <h2>Tabela de Tokens</h2>
+        <div id="Tab2" class="tab-content">
+            <section class="result">
+                <h2>Pilha de Símbolos</h2>
+                <div id="stackView" class="stack-view"></div>
+            </section>
 
-            <table id="tokensTable">
-                <thead>
-                    <tr>
-                        <th>Token</th>
-                        <th>Lexema</th>
-                        <th>Linha</th>
-                        <th>Comeco</th>
-                        <th>Fim</th>
-                    </tr>
-                </thead>
-                <tbody></tbody>
-            </table>
-        </section>
+            <section class="text" id="checkSintaxico"></section>
+        </div>
     </div>
 
     <script src="Lexico.js" type="module"></script>
