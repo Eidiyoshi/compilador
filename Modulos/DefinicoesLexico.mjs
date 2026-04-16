@@ -33,11 +33,11 @@ const types = [
 ];
 
 const temp_reserved = [
-    "program","procedure","read","write","true","false","begin","end","if","then","else","while","do"
+    "program","procedure","read","write","true","false","begin","end","if","then","else","while","do","and","or","not",
+    "<", ">", "=", "<=", ">=", "<>","+","-","*","/"
 ];
 
 const relational_operator = [
-    "<", ">", "=", "<=", ">=", "<>"
 ]
 
 const reserved = temp_reserved.concat(types);
