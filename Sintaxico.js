@@ -1,16 +1,123 @@
 import { types, tokens } from "./Modulos/DefinicoesLexico.mjs";
 // globalizar para facilitar a recursão
+
 var pilha = [];
 var fila = [];
+var tabelaSintatica = {};
+// nos nao terminais que possuem duas variações com ', o com sem está finalizado como 1, enquanto o com está com 2
+// ex: <declaracao_de_variavel>  ==  <declaracao_de_variavel1>
+//     <declaracao_de_variavel'> ==  <declaracao_de_variavel2>
 
-// ver como ficar dps, pode acabar virando uma constante
-// talvez precise posteriormente para considerar todos os caminhos, mas no momento nao precisei
-function construirTabelaPreditiva(){
-    let tabelaPreditiva = {};
-    tabelaPreditiva["S"]["a"] = "ab";
-    console.log(tabelaPreditiva["S"]["a"]);
+// terminais estao escrito em extenso
+// ex: ; == ponto_e_virgula
+
+// tudo esta sendo feito baseado na tabela sintatica na qual o orientando do celso fez
+
+// por ser pilha, cuidado na ordem de colocar nela, coloque as ultimas coisas primeiro, e as primeiras coisas por ultimo
+// ex: <declaracao_de_variaveis1> <declaracao_de_variaveis2> ponto_e_virgula
+//      pilha.push("ponto_e_virgula")
+//      pilha.push("<declaracao_de_variaveis2>")
+//      pilha.push("<declaracao_de_variaveis1>")
+
+// lembrar de retornar as funcoes para true, para nao dar erro no while
+
+function Programa(){
+    var tokenAtual = fila.shift()
+    var topoAtual = pilha.pop()
+    if (topoAtual != "<programa>" && tokenAtual != "program") declararErroSintaxico("ERRO: PROGRAMA NAO ENCONTRADO");
+    
+    pilha.push("<bloco>")
+    pilha.push("ponto_e_virgula")
+    pilha.push("<identificador>")
 }
 
+function parteDeDeclaracoesDeVariaveis(){
+    pilha.pop()
+    pilha.push("<declaracao_de_variavel2>")
+    pilha.push("ponto_e_virgula")
+    pilha.push("<declaracao_de_variavel1>")
+    return true
+}
+
+function declaracaoDeVariaveis2(){
+    pilha.pop()
+    pilha.push("ponto_e_virgula")
+    pilha.push("<declaracao_de_variavel2>")
+    pilha.push("<declaracao_de_variavel1>")
+}
+
+function declaracaoDeVariaveis1(){ 
+    pilha.pop()
+    pilha.push("<lista_de_identificadores1>")
+    pilha.push("<tipo>")
+
+    window.renderStack([...pilha]);
+    return true
+}
+
+function Vazio(){
+    pilha.pop() // Remover a parte
+    return true
+}
+
+function RetirarAmbos(){
+    pilha.pop()
+    fila.shift()
+}
+
+function declararErroSintaxico(erroString){
+    document.getElementById("checkSintaxico").textContent = erroString;
+}
+
+function listaDeIdentificadores2(){
+    pilha.pop()
+    pilha.push("<lista_de_identificadores2>")
+    pilha.push("<identificador>")
+    pilha.push("virgula")
+    return true
+}
+
+function listaDeIdentificadores1(){
+    pilha.pop()
+    pilha.push("<lista_de_identificadores2>")
+    pilha.push("<identificador>")
+}
+
+function Bloco(){
+    pilha.pop()
+    pilha.push("<comando_composto>")
+    pilha.push("<parte_de_declaracoes_de_subrotinas>")
+    pilha.push("<parte_de_declaracoes_de_variaveis>")
+    return true
+}
+
+
+
+function ParteDeDeclaracoesDeSubrotina(){
+    pilha.pop()
+    pilha.push("<declaracao_de_procedimento2>")
+    pilha.push("ponto_e_virgula")
+    pilha.push("<declaracao_de_procedimento1>")
+    return true
+}
+
+function declaracaoDeProcedimento2(){
+    pilha.pop()
+    pilha.push("ponto_e_virgula")
+    pilha.push("<declaracao_de_procedimento2>")
+    pilha.push("<declaracao_de_procedimento1>")
+    return true
+}
+
+function declaracaoDeProcedimento1(){
+    pilha.pop()
+    pilha.push("<bloco>")
+    pilha.push("ponto_e_virgula")
+    pilha.push("<paramentros_formais>")
+    pilha.push("<identificador>")
+    pilha.push("procedure")
+    return true
+}
 
 function enfileirarTokens(arrayTokens){
     var fila = [];
@@ -23,117 +130,101 @@ function enfileirarTokens(arrayTokens){
     return fila;
 }
 
-function declararErroSintaxico(erroString){
-    document.getElementById("checkSintaxico").textContent = erroString;
+function pushInt(){
+    pilha.pop() // retirar <tipo>
+    pilha.push("int")
+}
+function pushBoolean(){
+    pilha.pop()
+    pilha.push("boolean")
 }
 
-function DeclararVariavel(){
-    pilha.push("<ponto_e_virgula>")
-    pilha.push("<virgula>")
-    pilha.push("<identificador_valido>")
-    pilha.push("<tipo>")
+function construirTabelaSintaxica(){
+    tabelaSintatica["<programa>"] = {}
+    tabelaSintatica["<programa>"]["program"] = Programa
+    
+    tabelaSintatica["<bloco>"] = {}
+    tabelaSintatica["<bloco>"]["int"] = Bloco
+    tabelaSintatica["<bloco>"]["boolean"] = Bloco
 
-    window.renderStack([...pilha]);
+    tabelaSintatica["<parte_de_declaracoes_de_variaveis>"] = {}
+    tabelaSintatica["<parte_de_declaracoes_de_variaveis>"]["int"] = parteDeDeclaracoesDeVariaveis
+    tabelaSintatica["<parte_de_declaracoes_de_variaveis>"]["boolean"] = parteDeDeclaracoesDeVariaveis
 
-    var erro = 0;
-    var iteracoesMax = 0;
-    do {
-        iteracoesMax = iteracoesMax + 1;
+    tabelaSintatica["<declaracao_de_variavel1>"] = {}
+    tabelaSintatica["<declaracao_de_variavel1>"]["int"] = declaracaoDeVariaveis1
+    tabelaSintatica["<declaracao_de_variavel1>"]["boolean"] = declaracaoDeVariaveis1
 
-        var tokenAtual = fila.shift();
-        var topoAtual = pilha.pop();
+    tabelaSintatica["<declaracao_de_variavel2>"] = {}
+    tabelaSintatica["<declaracao_de_variavel2>"]["int"] = declaracaoDeVariaveis2
+    tabelaSintatica["<declaracao_de_variavel2>"]["boolean"] = declaracaoDeVariaveis2
+    tabelaSintatica["<declaracao_de_variavel2>"]["ponto"] = Vazio
+    tabelaSintatica["<declaracao_de_variavel2>"]["ponto_e_virgula"] = Vazio
+    tabelaSintatica["<declaracao_de_variavel2>"]["procedure"] = Vazio
+    tabelaSintatica["<declaracao_de_variavel2>"]["begin"] = Vazio
 
-        console.log(topoAtual)
-        console.log(tokenAtual)
-        console.log("-----")
 
-        if (topoAtual == "<tipo>" && (types.includes(tokenAtual) )) continue;
-        
-        if (topoAtual == "<identificador_valido>" && tokenAtual == "identificador_valido" ) continue;
+    tabelaSintatica["<identificador>"] = {}
+    tabelaSintatica["<identificador>"]["identificador_valido"] = RetirarAmbos
 
-        if (topoAtual == "<virgula>" && tokenAtual == "virgula" ){
-            pilha.push("<virgula>")
-            pilha.push("<identificador_valido>")
-            continue;
-        } 
+    tabelaSintatica["<lista_de_identificadores1>"] = {}
+    tabelaSintatica["<lista_de_identificadores1>"]["identificador_valido"] = listaDeIdentificadores1
+    tabelaSintatica["<lista_de_identificadores1>"]["int"] = Vazio
+    tabelaSintatica["<lista_de_identificadores1>"]["virgula"] = Vazio
+    tabelaSintatica["<lista_de_identificadores1>"]["ponto_e_virgula"] = Vazio
+    tabelaSintatica["<lista_de_identificadores1>"]["procedure"] = Vazio
+    tabelaSintatica["<lista_de_identificadores1>"]["begin"] = Vazio
 
-        if( topoAtual == "<virgula>" && tokenAtual == "ponto_e_virgula" ){ // esperando mais uma variavel, mas encontrou ponto_e_virgula, caminho normal
-            topoAtual = pilha.pop();
-            if( topoAtual == "<identificador_valido>" && tokenAtual == "ponto_e_virgula" ) topoAtual = pilha.pop();
-        }
-        
+    tabelaSintatica["<lista_de_identificadores2>"] = {}
+    tabelaSintatica["<lista_de_identificadores2>"]["virgula"] = listaDeIdentificadores2
+    tabelaSintatica["<lista_de_identificadores2>"]["int"] = Vazio
+    tabelaSintatica["<lista_de_identificadores2>"]["ponto_e_virgula"] = Vazio
+    tabelaSintatica["<lista_de_identificadores2>"]["procedure"] = Vazio
+    tabelaSintatica["<lista_de_identificadores2>"]["begin"] = Vazio
 
-        // ERROS
+    tabelaSintatica["<tipo>"] = {}
+    tabelaSintatica["<tipo>"]["int"] = pushInt
+    tabelaSintatica["<tipo>"]["boolean"] = pushBoolean
 
-        if (topoAtual == "<identificador_valido>" && tokenAtual == "virgula" ){
-            declararErroSintaxico("ERRO: NUMERO EXCESSIVO DE VIRGULAS")
-            console.log("ERRO: NUMERO EXCESSIVO DE VIRGULAS")
-            erro = 1;
-            break;
-        }
+    tabelaSintatica["<parte_de_declaracoes_de_subrotinas>"] = {}
+    tabelaSintatica["<parte_de_declaracoes_de_subrotinas>"]["procedure"] = ParteDeDeclaracoesDeSubrotina
+    tabelaSintatica["<parte_de_declaracoes_de_subrotinas>"]["begin"] = Vazio
 
-        if (topoAtual == "<virgula>" && tokenAtual == "identificador_valido" ){
-            declararErroSintaxico("ERRO: NUMERO EXCESSIVO DE VIRGULAS")
-            console.log("ERRO: NUMERO EXCESSIVO DE VIRGULAS")
-            erro = 1;
-            break;
-        }
-
-        if( topoAtual != "<ponto_e_virgula>" && tokenAtual == "ponto_e_virgula"){ 
-            declararErroSintaxico("ERRO: PONTO_E_VIRGULA INESPERADO")
-            console.log("ERRO: PONTO_E_VIRGULA INESPERADO")
-            erro = 1;
-            break;
-        }
-        
-        if( (topoAtual == "<ponto_e_virgula>" || topoAtual == "<identificador_valido>" || topoAtual == "<virgula>" ) && !tokens.includes(tokenAtual) ){ 
-            declararErroSintaxico("ERRO: PONTO_E_VIRGULA NAO ENCONTRADO")
-            console.log("ERRO: PONTO_E_VIRGULA NAO ENCONTRADO")
-            erro = 1;
-            break;
-        }
-        
-        if (topoAtual == "<tipo>" && !tokens.includes(tokenAtual)  ){
-            declararErroSintaxico("ERRO: TIPO NAO ENCONTRADO")
-            console.log("ERRO: TIPO NAO ENCONTRADO")
-            erro = 1;
-            break;
-        }
-        
-        if( !tokens.includes(tokenAtual)  ){ 
-            declararErroSintaxico("ERRO: TOKEN NAO IDENTIFICADO")
-            console.log("ERRO: TOKEN NAO IDENTIFICADO")
-            erro = 1;
-            break;
-        }
-
-    } while ( (tokenAtual != "ponto_e_virgula" && topoAtual != "<ponto_e_virgula>" ) && (iteracoesMax < 100));
-
-    if(erro){
-        console.log("ERRO NA DECLARACAO DE VARIAVEL");
-    } 
+    tabelaSintatica["<declaracao_de_procedimento2>"] = {}
+    tabelaSintatica["<declaracao_de_procedimento2>"]["procedure"] = declaracaoDeProcedimento2
+    
+    tabelaSintatica["<declaracao_de_procedimento1>"] = {}
+    tabelaSintatica["<declaracao_de_procedimento1>"]["procedure"] = declaracaoDeProcedimento1
 }
 
 export function analisadorSintaxico(arrayTokens){
+    construirTabelaSintaxica()
     fila = enfileirarTokens(arrayTokens);
 
     declararErroSintaxico("");
 
-    // eventualmente isto seria substituido por S start ou algo do tipo
-    // testemos para declaracao de variavel no momento
-    pilha.push("<Variavel>");
+    // Inicio do programa
+    pilha.push("<programa>");
     
 
     while( (fila[0] != "$" ) && (fila.length > 0) ){
         var topoPilha = pilha[pilha.length - 1]; //troquei o pop por isso pq não tava exibindo a pilha
+        var tokenAtual = fila[0]
 
-        if( topoPilha == "<Variavel>" ) DeclararVariavel();
-
-        fila.shift()
+        console.log("loop----")
+        console.log(pilha)
+        console.log(tokenAtual)
         
+        if ( tokenAtual == topoPilha ){ // caso batam, sao removidos
+            RetirarAmbos()
+            continue
+        }
+        
+        tabelaSintatica[topoPilha][tokenAtual]();
+
+        //if ( tabelaSintatica[topoPilha][tokenAtual]() ) declararErroSintaxico("ERRO")
     }
     
-    //construirTabelaPreditiva();
 }
 
 export { pilha };
