@@ -219,6 +219,12 @@ function expressao(){
     pilha.push("<expressao_simples>")
 }
 
+function expressao2(){
+    pilha.pop()
+    pilha.push("<expressao_simples>")
+    pilha.push("<relacao>")
+}
+
 function expressaoSimples1(){
     pilha.pop()
     pilha.push("<expressaoSimples2>")
