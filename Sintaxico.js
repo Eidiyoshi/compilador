@@ -57,7 +57,6 @@ function declaracaoDeVariaveis1(){
 
 function Vazio(){
     pilha.pop() // Remover a parte
-    return true
 }
 
 function RetirarAmbos(){
@@ -85,7 +84,7 @@ function listaDeIdentificadores1(){
 
 function Bloco(){
     pilha.pop()
-    pilha.push("<comando_composto>")
+    pilha.push("<comando_composto1>")
     pilha.push("<parte_de_declaracoes_de_subrotinas>")
     pilha.push("<parte_de_declaracoes_de_variaveis>")
     return true
@@ -111,18 +110,25 @@ function declaracaoDeProcedimento1(){
     pilha.pop()
     pilha.push("<bloco>")
     pilha.push("ponto_e_virgula")
-    pilha.push("<parametros_formais>")
+    pilha.push("<parametros_formais1>")
     pilha.push("<identificador>")
     pilha.push("procedure")
     return true
 }
 
-function parametrosFormais(){
+function parametrosFormais1(){
     pilha.pop()
     pilha.push("fecha_parenteses")
-    pilha.push("<parametros_formais>")
+    pilha.push("<parametros_formais2>")
     pilha.push("<secao_de_parametros_formais>")
     pilha.push("abre_parenteses")
+}
+
+function parametrosFormais2(){
+    pilha.pop()
+    pilha.push("<parametros_formais2>")
+    pilha.push("<secao_de_parametros_formais>")
+    pilha.push("ponto_e_virgula")
 }
 
 function secaoDeParametrosFormais(){
@@ -167,14 +173,14 @@ function comando21(){
 
 function comando22(){
     pilha.pop()
-    pilha.push("<expressao>")
-    pilha.push(":=")
+    pilha.push("<expressao1>")
+    pilha.push("atribuicao")
 }
 
 function atribuicao(){
     pilha.pop()
-    pilha.push("<expressao>")
-    pilha.push(":=")
+    pilha.push("<expressao1>")
+    pilha.push("atribuicao")
     pilha.push("<variavel>")
 }
 
@@ -191,17 +197,17 @@ function chamadaDeProcedimento2(){
 }
 
 function comandoCondicional1(){
-    pilha.push("<else>")
-    pilha.push("<comando>")
-    pilha.push("then")
-    pilha.push("<expressao>")
-    pilha.push("if")
     pilha.pop()
+    pilha.push("<else>")
+    pilha.push("<comando1>")
+    pilha.push("then")
+    pilha.push("<expressao1>")
+    pilha.push("if")
 }
 
 function else1(){
     pilha.pop()
-    pilha.push("<comando>")
+    pilha.push("<comando1>")
     pilha.push("else")
 }
 
@@ -209,33 +215,97 @@ function comandoRepetitivo1(){
     pilha.pop()
     pilha.push("<comando1>")
     pilha.push("do")
-    pilha.push("<expressao>")
+    pilha.push("<expressao1>")
     pilha.push("while")
 }
 
 function expressao(){
     pilha.pop()
     pilha.push("<expressao2>")
-    pilha.push("<expressao_simples>")
+    pilha.push("<expressao_simples1>")
 }
 
 function expressao2(){
     pilha.pop()
-    pilha.push("<expressao_simples>")
+    pilha.push("<expressao_simples1>")
     pilha.push("<relacao>")
 }
 
 function expressaoSimples1(){
     pilha.pop()
-    pilha.push("<expressaoSimples2>")
-    pilha.push("<termo>")
+    pilha.push("<expressao_simples2>")
+    pilha.push("<termo1>")
     pilha.push("<op>")
 }
 function expressaoSimples2(){
     pilha.pop()
-    pilha.push("<expressaoSimples2>")
-    pilha.push("<termo<")
+    pilha.push("<expressao_simples2>")
+    pilha.push("<termo1>")
     pilha.push("<op2>")
+}
+
+function termo1(){
+    pilha.pop()
+    pilha.push("<termo2>")
+    pilha.push("<fator>")
+}
+
+function termo2(){
+    pilha.pop()
+    pilha.push("<termo2>")
+    pilha.push("<fator>")
+    pilha.push("<op3>")
+}
+
+function fatorIdentificador(){
+    pilha.pop()
+    pilha.push("<variavel1>")
+}
+
+function fatorParenteses(){
+    pilha.pop()
+    pilha.push("fecha_parenteses")
+    pilha.push("<expressao1>")
+    pilha.push("abre_parenteses")
+}
+
+function fatorNot(){
+    pilha.pop()
+    pilha.push("<fator>")
+    pilha.push("not")
+}
+
+function variavel1(){
+    pilha.pop()
+    pilha.push("<variavel2>")
+    pilha.push("<identificador>")
+}
+
+function variavel2Parenteses(){
+    pilha.pop()
+    pilha.push("fecha_parenteses")
+    pilha.push("<lista_de_expressoes1")
+    pilha.push("abre_parenteses")
+}
+
+function variavel2Colchete(){
+    pilha.pop()
+    pilha.push("]")
+    pilha.push("<expressao1>")
+    pilha.push("[")
+}
+
+function listaDeExpressoes1(){
+    pilha.pop()
+    pilha.push("<lista_de_expressoes2>")
+    pilha.push("<expressao1>")
+}
+
+function listaDeExpressoes2(){
+    pilha.pop()
+    pilha.push("<lista_de_expressoes2>")
+    pilha.push("<expressao1>")
+    pilha.push("virgula")
 }
 
 function enfileirarTokens(arrayTokens){
@@ -293,8 +363,29 @@ function pushSubtracao(){
     pilha.pop()
     pilha.push("-")
 }
+function pushOr(){
+    pilha.pop()
+    pilha.push("or")
+}
+function pushMult(){
+    pilha.pop()
+    pilha.push("*")
+
+}
+function pushDiv(){
+    pilha.pop()
+    pilha.push("/")
+}
+function pushAnd(){
+    pilha.pop()
+    pilha.push("and")
+}
+function pushNumero(){
+    pilha.pop()
+    pilha.push("numero")
+}
+
 function construirTabelaSintaxica(){
-    {
     tabelaSintatica["<programa>"] = {}
     tabelaSintatica["<programa>"]["program"] = Programa
     
@@ -354,8 +445,12 @@ function construirTabelaSintaxica(){
     tabelaSintatica["<declaracao_de_procedimento1>"] = {}
     tabelaSintatica["<declaracao_de_procedimento1>"]["procedure"] = declaracaoDeProcedimento1
 
-    tabelaSintatica["<parametros_formais>"] = {}
-    tabelaSintatica["<parametros_formais>"]["abre_parenteses"] = parametrosFormais
+    tabelaSintatica["<parametros_formais1>"] = {}
+    tabelaSintatica["<parametros_formais1>"]["abre_parenteses"] = parametrosFormais1
+
+    tabelaSintatica["<parametros_formais2>"] = {}
+    tabelaSintatica["<parametros_formais2>"]["ponto_e_virgula"] = parametrosFormais2
+    tabelaSintatica["<parametros_formais2>"]["fecha_parenteses"] = Vazio
 
     tabelaSintatica["<secao_de_parametros_formais>"] = {}
     tabelaSintatica["<secao_de_parametros_formais>"]["var"] = secaoDeParametrosFormais
@@ -416,8 +511,10 @@ function construirTabelaSintaxica(){
 
     tabelaSintatica["<comando_repetitivo_1>"] = {}
     tabelaSintatica["<comando_repetitivo_1>"]["while"] = comandoRepetitivo1
+
     tabelaSintatica["<expressao1>"] = {}
     tabelaSintatica["<expressao1>"]["identificador_valido"] = expressao
+    tabelaSintatica["<expressao1>"]["numero"] = expressao
     tabelaSintatica["<expressao1>"]["abre_parenteses"] = expressao
     tabelaSintatica["<expressao1>"]["+"] = expressao
     tabelaSintatica["<expressao1>"]["-"] = expressao
@@ -467,10 +564,9 @@ function construirTabelaSintaxica(){
     tabelaSintatica["<relacao>"]["<"] = pushMenor
     tabelaSintatica["<relacao>"]["<="] = pushMenorI
     
-    }// apagar isso o quanto antes
-    
     tabelaSintatica["<expressao_simples1>"] = {}
     tabelaSintatica["<expressao_simples1>"]["identificador_valido"] = expressaoSimples1
+    tabelaSintatica["<expressao_simples1>"]["numero"] = expressaoSimples1
     tabelaSintatica["<expressao_simples1>"]["abre_parenteses"] = expressaoSimples1
     tabelaSintatica["<expressao_simples1>"]["+"] = expressaoSimples1
     tabelaSintatica["<expressao_simples1>"]["-"] = expressaoSimples1
@@ -489,6 +585,7 @@ function construirTabelaSintaxica(){
     tabelaSintatica["<expressao_simples1>"]["begin"] = Vazio
 
     tabelaSintatica["<op>"] = {}
+    tabelaSintatica["<op>"]["numero"] = Vazio
     tabelaSintatica["<op>"]["+"] = pushAdicao
     tabelaSintatica["<op>"]["-"] = pushSubtracao
     tabelaSintatica["<op>"]["not"] = Vazio
@@ -505,6 +602,7 @@ function construirTabelaSintaxica(){
     tabelaSintatica["<expressao_simples2>"]["begin"] = Vazio
     tabelaSintatica["<expressao_simples2>"]["virgula"] = Vazio
     tabelaSintatica["<expressao_simples2>"]["abre_parenteses"] = Vazio
+    tabelaSintatica["<expressao_simples2>"]["fecha_parenteses"] = Vazio
     tabelaSintatica["<expressao_simples2>"]["end"] = Vazio
     tabelaSintatica["<expressao_simples2>"]["else"] = Vazio
     tabelaSintatica["<expressao_simples2>"]["="] = Vazio
@@ -517,11 +615,109 @@ function construirTabelaSintaxica(){
     tabelaSintatica["<expressao_simples2>"]["do"] = Vazio
     tabelaSintatica["<expressao_simples2>"]["]"] = Vazio
     
+    tabelaSintatica["<op2>"] = {}
+    tabelaSintatica["<op2>"]["+"] = pushAdicao
+    tabelaSintatica["<op2>"]["-"] = pushSubtracao
+    tabelaSintatica["<op2>"]["or"] = pushOr
+    
+    tabelaSintatica["<termo1>"] = {}
+    tabelaSintatica["<termo1>"]["identificador_valido"] = termo1
+    tabelaSintatica["<termo1>"]["numero"] = termo1
+    tabelaSintatica["<termo1>"]["abre_parenteses"] = termo1
+    tabelaSintatica["<termo1>"]["not"] = termo1
+    tabelaSintatica["<termo1>"]["identificador_valido"] = termo1
+    
+    tabelaSintatica["<termo2>"] = {}
+    tabelaSintatica["<termo2>"]["ponto"] = Vazio
+    tabelaSintatica["<termo2>"]["ponto_e_virgula"] = Vazio
+    tabelaSintatica["<termo2>"]["procedure"] = Vazio
+    tabelaSintatica["<termo2>"]["begin"] = Vazio
+    tabelaSintatica["<termo2>"]["virgula"] = Vazio
+    tabelaSintatica["<termo2>"]["fecha_parenteses"] = Vazio
+    tabelaSintatica["<termo2>"]["end"] = Vazio
+    tabelaSintatica["<termo2>"]["else"] = Vazio
+    tabelaSintatica["<termo2>"]["+"] = Vazio
+    tabelaSintatica["<termo2>"]["-"] = Vazio
+    tabelaSintatica["<termo2>"]["="] = Vazio
+    tabelaSintatica["<termo2>"]["<>"] = Vazio
+    tabelaSintatica["<termo2>"]["<"] = Vazio
+    tabelaSintatica["<termo2>"]["<="] = Vazio
+    tabelaSintatica["<termo2>"][">"] = Vazio
+    tabelaSintatica["<termo2>"][">="] = Vazio
+    tabelaSintatica["<termo2>"]["then"] = Vazio
+    tabelaSintatica["<termo2>"]["do"] = Vazio
+    tabelaSintatica["<termo2>"]["]"] = Vazio
+    tabelaSintatica["<termo2>"]["*"] = termo2
+    tabelaSintatica["<termo2>"]["/"] = termo2
+    tabelaSintatica["<termo2>"]["and"] = termo2
+    
+    tabelaSintatica["<op3>"] = {}
+    tabelaSintatica["<op3>"]["*"] = pushMult
+    tabelaSintatica["<op3>"]["/"] = pushDiv
+    tabelaSintatica["<op3>"]["and"] = pushAnd
+
+    tabelaSintatica["<fator>"] = {}
+    tabelaSintatica["<fator>"]["identificador_valido"] = fatorIdentificador
+    tabelaSintatica["<fator>"]["abre_parenteses"] = fatorParenteses
+    tabelaSintatica["<fator>"]["numero"] = pushNumero
+    tabelaSintatica["<fator>"]["not"] = fatorNot
+
+    tabelaSintatica["<variavel1>"] = {}
+    tabelaSintatica["<variavel1>"]["identificador_valido"] = variavel1
+
+    tabelaSintatica["<variavel2>"] = {}
+    tabelaSintatica["<variavel2>"]["abre_parenteses"] = variavel2Parenteses
+    tabelaSintatica["<variavel2>"]["["] = variavel2Colchete
+    tabelaSintatica["<variavel2>"]["="] = Vazio
+    tabelaSintatica["<variavel2>"]["<>"] = Vazio
+    tabelaSintatica["<variavel2>"]["<"] = Vazio
+    tabelaSintatica["<variavel2>"]["<="] = Vazio
+    tabelaSintatica["<variavel2>"][">"] = Vazio
+    tabelaSintatica["<variavel2>"][">="] = Vazio
+    tabelaSintatica["<variavel2>"]["then"] = Vazio
+    tabelaSintatica["<variavel2>"]["do"] = Vazio
+    tabelaSintatica["<variavel2>"]["]"] = Vazio
+    tabelaSintatica["<variavel2>"]["*"] = termo2
+    tabelaSintatica["<variavel2>"]["/"] = termo2
+    tabelaSintatica["<variavel2>"]["and"] = termo2
+    tabelaSintatica["<variavel2>"]["atribuicao"] = Vazio
+    tabelaSintatica["<variavel2>"]["+"] = Vazio
+    tabelaSintatica["<variavel2>"]["-"] = Vazio
+    tabelaSintatica["<variavel2>"]["end"] = Vazio
+    tabelaSintatica["<variavel2>"]["else"] = Vazio
+    tabelaSintatica["<variavel2>"]["-"] = Vazio
+    tabelaSintatica["<variavel2>"]["ponto"] = Vazio
+    tabelaSintatica["<variavel2>"]["ponto_e_virgula"] = Vazio
+    tabelaSintatica["<variavel2>"]["procedure"] = Vazio
+    tabelaSintatica["<variavel2>"]["begin"] = Vazio
+    tabelaSintatica["<variavel2>"]["virgula"] = Vazio
+    tabelaSintatica["<variavel2>"]["fecha_parenteses"] = Vazio
+
+    tabelaSintatica["<lista_de_expressoes1>"] = {}
+    tabelaSintatica["<lista_de_expressoes1>"]["identificador_valido"] = listaDeExpressoes1
+    tabelaSintatica["<lista_de_expressoes1>"]["virgula"] = listaDeExpressoes1
+    tabelaSintatica["<lista_de_expressoes1>"]["abre_parenteses"] = listaDeExpressoes1
+    tabelaSintatica["<lista_de_expressoes1>"]["fecha_parenteses"] = Vazio
+    tabelaSintatica["<lista_de_expressoes1>"]["+"] = listaDeExpressoes1
+    tabelaSintatica["<lista_de_expressoes1>"]["-"] = listaDeExpressoes1
+    tabelaSintatica["<lista_de_expressoes1>"]["="] = listaDeExpressoes1
+    tabelaSintatica["<lista_de_expressoes1>"]["<>"] = listaDeExpressoes1
+    tabelaSintatica["<lista_de_expressoes1>"]["<"] = listaDeExpressoes1
+    tabelaSintatica["<lista_de_expressoes1>"]["<="] = listaDeExpressoes1
+    tabelaSintatica["<lista_de_expressoes1>"][">"] = listaDeExpressoes1
+    tabelaSintatica["<lista_de_expressoes1>"][">="] = listaDeExpressoes1
+
+    tabelaSintatica["<lista_de_expressoes2>"] = {}
+    tabelaSintatica["<lista_de_expressoes2>"]["virgula"] = listaDeExpressoes2
+    tabelaSintatica["<lista_de_expressoes2>"]["fecha_parenteses"] = Vazio
+
+    
 }
 
 export function analisadorSintaxico(arrayTokens){
     construirTabelaSintaxica()
     fila = enfileirarTokens(arrayTokens);
+    pilha = []
 
     declararErroSintaxico("");
 
@@ -533,8 +729,8 @@ export function analisadorSintaxico(arrayTokens){
         var topoPilha = pilha[pilha.length - 1]; //troquei o pop por isso pq não tava exibindo a pilha
         var tokenAtual = fila[0]
 
-        console.log("loop----")
-        console.log(pilha)
+        console.log("loop-------------------------------------")
+        console.log(pilha.at(-1))
         console.log(tokenAtual)
         
         if ( tokenAtual == topoPilha ){ // caso batam, sao removidos

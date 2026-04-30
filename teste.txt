@@ -7,7 +7,7 @@ int a, b, c;
 boolean d, e, f;
 begin
 	a:=1;
-	if (a<1)@
+	if (a<1) then
 		a:=12
 end;
 
