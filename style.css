@@ -43,17 +43,54 @@ h2 {
     margin-right: 10px;
 }
 
-textarea {
-    width: 100%;
-    min-height: 180px;
-    padding: 12px;
-    background: #eef2f7;
+.code-editor {
+    display: flex;
+    height: 400px;
     border: 1px solid #ccc;
     border-radius: 6px;
-    resize: vertical;
+    overflow: hidden;
+    background: #eef2f7;
+}
+
+.lines-wrapper {
+    background: #e2e7ee;
+    border-right: 1px solid #c7cdd4;
+    padding-top: 10px;
+    overflow: hidden;
+    min-width: 50px;
+}
+
+.line-numbers {
+    color: #6b7280;
+    text-align: right;
+    user-select: none;
+    padding: 0 10px;
     font-family: monospace;
     font-size: 14px;
+    line-height: 20px;
+    position: relative;
+    will-change: transform;
+}
+
+.line-numbers div {
+    height: 20px;
+}
+
+#inputField {
+    flex: 1;
+    background: #eef2f7;
+    color: #222;
+    border: none;
+    outline: none;
+    padding: 10px 12px;
+    resize: none;
+    font-family: monospace;
+    font-size: 14px;
+    line-height: 20px;
     box-sizing: border-box;
+    overflow: auto;
+    white-space: pre;
+    tab-size: 4;
 }
 
 .button {

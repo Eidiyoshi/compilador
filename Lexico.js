@@ -405,6 +405,7 @@ function readTextFile(event){
     reader.onload = function(event){
         const text = event.target.result;
         document.getElementById("inputField").value = text;
+        updateLines();
     };
 
     reader.readAsText(file, "UTF-8");
@@ -486,4 +487,28 @@ window.openTab = function(evt, tabName) {
 }
 
 var input = document.querySelector("#inputFile");
+
+
+//Atualiza os números das linhas de código
+const textarea = document.getElementById("inputField");
+const lines = document.getElementById("lines");
+
+function updateLines() {
+    const totalLines = textarea.value.split("\n").length;
+    let html = "";
+
+    for(let i = 1; i <= totalLines; i++) {
+        html += `<div>${i}</div>`;
+    }
+
+    lines.innerHTML = html;
+}
+
+textarea.addEventListener("input", updateLines);
+textarea.addEventListener("scroll", () => {
+    lines.style.transform =`translateY(-${textarea.scrollTop}px)`;
+});
+updateLines();
+
+
 input.addEventListener('change', readTextFile, false)
