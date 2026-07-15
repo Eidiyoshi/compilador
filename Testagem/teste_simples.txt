@@ -5,7 +5,6 @@ begin
     read(a,b);
 
     if (a > b)
-    begin
+    then
         write(a);
-    end;
 end.

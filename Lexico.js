@@ -156,6 +156,12 @@ function identifyToken(text) {
                                     current_token = "";
                                     current_string = "";
                                 }
+                                else if(current_string == "read" || current_string == "write")
+                                {
+                                    pushToken(real_result, current_token, current_string, current_line, beginning_of_token, line_position);
+                                    current_token = "";
+                                    current_string = "";
+                                }
                                 else
                                 {
                                     pushToken(real_result, current_string, current_string, current_line, beginning_of_token, line_position);
@@ -343,7 +349,7 @@ function identifyToken(text) {
                             current_string = "";
                         }
                         current_string += current_char;
-                        current_token = tokens[8]; // operacao_relacional
+                        current_token = current_string; // operacao_relacional
                         beginning_of_token = line_position;
                         if(current_string === "<=" || current_string === ">=" || current_string === "<>")
                         {

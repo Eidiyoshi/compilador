@@ -26,6 +26,7 @@ function Programa(){
     var topoAtual = pilha.pop()
     if (topoAtual != "<programa>" && tokenAtual != "program") declararErroSintaxico("ERRO: PROGRAMA NAO ENCONTRADO");
     
+    pilha.push("ponto_final")
     pilha.push("<bloco>")
     pilha.push("ponto_e_virgula")
     pilha.push("<identificador>")
@@ -193,7 +194,7 @@ function chamadaDeProcedimento1(){
 function chamadaDeProcedimento2(){
     pilha.pop()
     pilha.push("fecha_parenteses")
-    pilha.push("<lista_de_expressao>")
+    pilha.push("<lista_de_expressoes1>")
 }
 
 function comandoCondicional1(){
@@ -284,7 +285,7 @@ function variavel1(){
 function variavel2Parenteses(){
     pilha.pop()
     pilha.push("fecha_parenteses")
-    pilha.push("<lista_de_expressoes1")
+    pilha.push("<lista_de_expressoes1>")
     pilha.push("abre_parenteses")
 }
 
@@ -463,12 +464,14 @@ function construirTabelaSintaxica(){
 
     tabelaSintatica["<comando_composto2>"] = {}
     tabelaSintatica["<comando_composto2>"]["ponto_e_virgula"] = comandoComposto2
+    tabelaSintatica["<comando_composto2>"]["end"] = Vazio
 
     tabelaSintatica["<comando1>"] = {}
     tabelaSintatica["<comando1>"]["begin"] = comando11
     tabelaSintatica["<comando1>"]["identificador_valido"] = comando12
     tabelaSintatica["<comando1>"]["if"] = comandoCondicional1
     tabelaSintatica["<comando1>"]["while"] = comandoRepetitivo1
+    tabelaSintatica["<comando1>"]["end"] = Vazio
     
     tabelaSintatica["<comando2>"] = {}
     tabelaSintatica["<comando2>"]["abre_parenteses"] = comando21
@@ -740,7 +743,7 @@ export function analisadorSintaxico(arrayTokens){
         
         //tabelaSintatica[topoPilha][tokenAtual]();
 
-        if ( tabelaSintatica[topoPilha][tokenAtual]() ) declararErroSintaxico("ERRO")
+        if(tabelaSintatica[topoPilha][tokenAtual]()) declararErroSintaxico("ERRO")
     }
     
 }
