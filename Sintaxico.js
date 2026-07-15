@@ -738,9 +738,9 @@ export function analisadorSintaxico(arrayTokens){
             continue
         }
         
-        tabelaSintatica[topoPilha][tokenAtual]();
+        //tabelaSintatica[topoPilha][tokenAtual]();
 
-        //if ( tabelaSintatica[topoPilha][tokenAtual]() ) declararErroSintaxico("ERRO")
+        if ( tabelaSintatica[topoPilha][tokenAtual]() ) declararErroSintaxico("ERRO")
     }
     
 }
