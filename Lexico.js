@@ -395,10 +395,7 @@ function identifyToken(text) {
     // eventualmente retirar isso aq, pq o sintaxico esta sendo chamado pelo lexico
     // o que nao deveria acontecer por excesso de funcao
     // ------------------------------------------------------------------------------
-    debug = analisadorSintaxico(real_result)
-    console.log("Comeco:\n\n\n");
-    console.log(debug)
-    console.log("\n\n\nFinal.");
+    analisadorSintaxico(real_result)
     renderStack([...pilha]);
 
     //console.log(real_result.join(" "))

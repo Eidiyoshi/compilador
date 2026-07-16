@@ -1,0 +1,13 @@
+program atribuicaoCorreto;
+var a : real;
+begin
+if (a < 3.0) then
+begin
+ if(a > 0.0) then
+    begin
+       write(a)
+    end;
+  a := 2.5
+end;
+  write(a)
+end.
