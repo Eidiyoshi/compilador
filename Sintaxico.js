@@ -747,4 +747,4 @@ export function analisadorSintaxico(arrayTokens){
     
 }
 
-export { pilha };
+export { pilha, fila };

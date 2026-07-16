@@ -51,7 +51,7 @@ function tokenAtual()
 function consumirToken(tokenEsperado)
 {
     if (tokenAtual() !== tokenEsperado) {
-        gerarErro(`ERRO sintatico: esperado "${tokenEsperado}", encontrado "${tokenAtual()}"`); // a existência do ` para manipular strings prova que javascript é uma desgraça
+        gerarErro(`ERRO sintaxico: esperado "${tokenEsperado}", encontrado "${tokenAtual()}"`); // a existência do ` para manipular strings prova que javascript é uma desgraça
     }
     posicao++;
 }
@@ -86,7 +86,7 @@ function ntBloco()
     }
     else
     {
-        gerarErro(`ERRO sintatico: bloco invalido`);
+        gerarErro(`ERRO sintaxico: bloco invalido`);
     }
 }
 
@@ -109,7 +109,7 @@ function ntParte_de_declaracoes_de_variaveis()
     }
     else
     {
-        gerarErro(`ERRO sintatico: parte_de_declaracoes_de_variaveis invalido`);
+        gerarErro(`ERRO sintaxico: parte_de_declaracoes_de_variaveis invalido`);
     }
 }
 
@@ -131,7 +131,7 @@ function ntDeclaracao_de_variavel1()
     }
     else
     {
-        gerarErro(`ERRO sintatico: declaracao_de_variavel1 invalido`);
+        gerarErro(`ERRO sintaxico: declaracao_de_variavel1 invalido`);
     }
 }
 
@@ -154,7 +154,7 @@ function ntDeclaracao_de_variavel2()
     }
     else
     {
-        gerarErro(`ERRO sintatico: declaracao_de_variavel2 invalido`);
+        gerarErro(`ERRO sintaxico: declaracao_de_variavel2 invalido`);
     }
 }
 
@@ -175,7 +175,7 @@ function ntIdentificador()
     }
     else
     {
-        gerarErro(`ERRO sintatico: identificador invalido`);
+        gerarErro(`ERRO sintaxico: identificador invalido`);
     }
 }
 
@@ -197,7 +197,7 @@ function ntLista_de_identificadores1()
     }
     else
     {
-        gerarErro(`ERRO sintatico: lista_de_identificadores1 invalido`);
+        gerarErro(`ERRO sintaxico: lista_de_identificadores1 invalido`);
     }
 }
 
@@ -220,7 +220,7 @@ function ntLista_de_identificadores2()
     }
     else
     {
-        gerarErro(`ERRO sintatico: lista_de_identificadores2 invalido`);
+        gerarErro(`ERRO sintaxico: lista_de_identificadores2 invalido`);
     }
 }
 
@@ -248,7 +248,7 @@ function ntTipo()
     }
     else
     {
-        gerarErro(`ERRO sintatico: tipo invalido`);
+        gerarErro(`ERRO sintaxico: tipo invalido`);
     }
 }
 
@@ -271,7 +271,7 @@ function ntParte_de_declaracoes_de_subrotinas()
     }
     else
     {
-        gerarErro(`ERRO sintatico: parte_de_declaracoes_de_subrotinas invalido`);
+        gerarErro(`ERRO sintaxico: parte_de_declaracoes_de_subrotinas invalido`);
     }
 }
 
@@ -294,7 +294,7 @@ function ntDeclaracao_de_procedimento2()
     }
     else
     {
-        gerarErro(`ERRO sintatico: declaracao_de_procedimento2 invalido`);
+        gerarErro(`ERRO sintaxico: declaracao_de_procedimento2 invalido`);
     }
 }
 
@@ -319,7 +319,7 @@ function ntDeclaracao_de_procedimento1()
     }
     else
     {
-        gerarErro(`ERRO sintatico: declaracao_de_procedimento1 invalido`);
+        gerarErro(`ERRO sintaxico: declaracao_de_procedimento1 invalido`);
     }
 }
 
@@ -343,7 +343,7 @@ function ntParametros_formais1()
     }
     else
     {
-        gerarErro(`ERRO sintatico: parametros_formais1 invalido`);
+        gerarErro(`ERRO sintaxico: parametros_formais1 invalido`);
     }
 }
 
@@ -366,7 +366,7 @@ function ntParametros_formais2()
     }
     else
     {
-        gerarErro(`ERRO sintatico: parametros_formais2 invalido`);
+        gerarErro(`ERRO sintaxico: parametros_formais2 invalido`);
     }
 }
 
@@ -390,7 +390,7 @@ function ntSecaoDeParametrosFormais()
     }
     else
     {
-        gerarErro(`ERRO sintatico: secaoDeParametrosFormais invalido`);
+        gerarErro(`ERRO sintaxico: secaoDeParametrosFormais invalido`);
     }
 }
 
@@ -411,7 +411,7 @@ function ntVar()
     }
     else
     {
-        gerarErro(`ERRO sintatico: var invalido`);
+        gerarErro(`ERRO sintaxico: var invalido`);
     }
 }
 
@@ -435,7 +435,7 @@ function ntComando_composto1()
     }
     else
     {
-        gerarErro(`ERRO sintatico: comando_composto1 invalido`);
+        gerarErro(`ERRO sintaxico: comando_composto1 invalido`);
     }
 }
 
@@ -458,7 +458,7 @@ function ntComando_composto2()
     }
     else
     {
-        gerarErro(`ERRO sintatico: comando_composto2 invalido`);
+        gerarErro(`ERRO sintaxico: comando_composto2 invalido`);
     }
 }
 
@@ -502,7 +502,7 @@ function ntComando1()
     }
     else
     {
-        gerarErro(`ERRO sintatico: comando1 invalido`);
+        gerarErro(`ERRO sintaxico: comando1 invalido`);
     }
 }
 
@@ -532,7 +532,7 @@ function ntComando2()
     }
     else
     {
-        gerarErro(`ERRO sintatico: comando2 invalido`);
+        gerarErro(`ERRO sintaxico: comando2 invalido`);
     }
 }
 
@@ -555,7 +555,7 @@ function ntAtribuicao()
     }
     else
     {
-        gerarErro(`ERRO sintatico: atribuicao invalido`);
+        gerarErro(`ERRO sintaxico: atribuicao invalido`);
     }
 }
 
@@ -577,7 +577,7 @@ function ntChamada_de_procedimento1()
     }
     else
     {
-        gerarErro(`ERRO sintatico: chamada_de_procedimento1 invalido`);
+        gerarErro(`ERRO sintaxico: chamada_de_procedimento1 invalido`);
     }
 }
 
@@ -599,7 +599,7 @@ function ntChamada_de_procedimento2()
     }
     else
     {
-        gerarErro(`ERRO sintatico: chamada_de_procedimento2 invalido`);
+        gerarErro(`ERRO sintaxico: chamada_de_procedimento2 invalido`);
     }
 }
 
@@ -624,7 +624,7 @@ function ntComando_condicional_1()
     }
     else
     {
-        gerarErro(`ERRO sintatico: comando_condicional_1 invalido`);
+        gerarErro(`ERRO sintaxico: comando_condicional_1 invalido`);
     }
 }
 
@@ -646,7 +646,7 @@ function ntElse()
     }
     else
     {
-        gerarErro(`ERRO sintatico: else invalido`);
+        gerarErro(`ERRO sintaxico: else invalido`);
     }
 }
 
@@ -670,7 +670,7 @@ function ntComando_repetitivo_1()
     }
     else
     {
-        gerarErro(`ERRO sintatico: comando_repetitivo_1 invalido`);
+        gerarErro(`ERRO sintaxico: comando_repetitivo_1 invalido`);
     }
 }
 
@@ -692,7 +692,7 @@ function ntExpressao1()
     }
     else
     {
-        gerarErro(`ERRO sintatico: expressao1 invalido`);
+        gerarErro(`ERRO sintaxico: expressao1 invalido`);
     }
 }
 
@@ -714,7 +714,7 @@ function ntExpressao2()
     }
     else
     {
-        gerarErro(`ERRO sintatico: expressao2 invalido`);
+        gerarErro(`ERRO sintaxico: expressao2 invalido`);
     }
 }
 
@@ -735,7 +735,7 @@ function ntRelacao()
     }
     else
     {
-        gerarErro(`ERRO sintatico: relacao invalido`);
+        gerarErro(`ERRO sintaxico: relacao invalido`);
     }
 }
 
@@ -758,7 +758,7 @@ function ntExpressao_simples1()
     }
     else
     {
-        gerarErro(`ERRO sintatico: expressao_simples1 invalido`);
+        gerarErro(`ERRO sintaxico: expressao_simples1 invalido`);
     }
 }
 
@@ -779,7 +779,7 @@ function ntOp()
     }
     else
     {
-        gerarErro(`ERRO sintatico: op invalido`);
+        gerarErro(`ERRO sintaxico: op invalido`);
     }
 }
 
@@ -802,7 +802,7 @@ function ntExpressao_simples2()
     }
     else
     {
-        gerarErro(`ERRO sintatico: expressao_simples2 invalido`);
+        gerarErro(`ERRO sintaxico: expressao_simples2 invalido`);
     }
 }
 
@@ -823,7 +823,7 @@ function ntOp2()
     }
     else
     {
-        gerarErro(`ERRO sintatico: op2 invalido`);
+        gerarErro(`ERRO sintaxico: op2 invalido`);
     }
 }
 
@@ -845,7 +845,7 @@ function ntTermo1()
     }
     else
     {
-        gerarErro(`ERRO sintatico: termo1 invalido`);
+        gerarErro(`ERRO sintaxico: termo1 invalido`);
     }
 }
 
@@ -868,7 +868,7 @@ function ntTermo2()
     }
     else
     {
-        gerarErro(`ERRO sintatico: termo2 invalido`);
+        gerarErro(`ERRO sintaxico: termo2 invalido`);
     }
 }
 
@@ -889,7 +889,7 @@ function ntOp3()
     }
     else
     {
-        gerarErro(`ERRO sintatico: op3 invalido`);
+        gerarErro(`ERRO sintaxico: op3 invalido`);
     }
 }
 
@@ -928,7 +928,7 @@ function ntFator()
     }
     else
     {
-        gerarErro(`ERRO sintatico: fator invalido`);
+        gerarErro(`ERRO sintaxico: fator invalido`);
     }
 }
 
@@ -950,7 +950,7 @@ function ntVariavel1()
     }
     else
     {
-        gerarErro(`ERRO sintatico: variavel1 invalido`);
+        gerarErro(`ERRO sintaxico: variavel1 invalido`);
     }
 }
 
@@ -988,7 +988,7 @@ function ntVariavel2()
     }
     else
     {
-        gerarErro(`ERRO sintatico: variavel2 invalido`);
+        gerarErro(`ERRO sintaxico: variavel2 invalido`);
     }
 }
 
@@ -1010,7 +1010,7 @@ function ntLista_de_expressoes1()
     }
     else
     {
-        gerarErro(`ERRO sintatico: lista_de_expressoes1 invalido`);
+        gerarErro(`ERRO sintaxico: lista_de_expressoes1 invalido`);
     }
 }
 
@@ -1033,7 +1033,7 @@ function ntLista_de_expressoes2()
     }
     else
     {
-        gerarErro(`ERRO sintatico: lista_de_expressoes2 invalido`);
+        gerarErro(`ERRO sintaxico: lista_de_expressoes2 invalido`);
     }
 }
 
@@ -1055,7 +1055,7 @@ function nt()
     }
     else
     {
-        gerarErro(`ERRO sintatico:  invalido`);
+        gerarErro(`ERRO sintaxico:  invalido`);
     }
 }
 */
@@ -1072,7 +1072,7 @@ export function analisadorSintaxico(arrayTokens){
         ntPrograma();
  
         if (tokenAtual() !== "$") {
-            gerarErro("ERRO sintatico: tokens sobrando apos o fim do programa");
+            gerarErro("ERRO sintaxico: tokens sobrando apos o fim do programa");
         }
     } catch (e) {
         if (!(e instanceof ErroSintaxico)) throw e; //o erro não foi sintático
