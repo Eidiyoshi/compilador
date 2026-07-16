@@ -182,7 +182,7 @@ function atribuicao(){
     pilha.pop()
     pilha.push("<expressao1>")
     pilha.push("atribuicao")
-    pilha.push("<variavel>")
+    pilha.push("<variavel1>")
 }
 
 function chamadaDeProcedimento1(){
@@ -502,8 +502,8 @@ function construirTabelaSintaxica(){
     tabelaSintatica["<chamada_de_procedimento2>"]["procedure"] = Vazio
     tabelaSintatica["<chamada_de_procedimento2>"]["begin"] = Vazio
 
-    tabelaSintatica["<comando_condicional_1"] = {}
-    tabelaSintatica["<comando_condicional_1"]["if"] = comandoCondicional1
+    tabelaSintatica["<comando_condicional_1>"] = {}
+    tabelaSintatica["<comando_condicional_1>"]["if"] = comandoCondicional1
     
     tabelaSintatica["<else>"] = {}
     tabelaSintatica["<else>"]["else"] = else1
@@ -588,9 +588,9 @@ function construirTabelaSintaxica(){
     tabelaSintatica["<expressao_simples1>"]["begin"] = Vazio
 
     tabelaSintatica["<op>"] = {}
-    tabelaSintatica["<op>"]["numero"] = Vazio
     tabelaSintatica["<op>"]["+"] = pushAdicao
     tabelaSintatica["<op>"]["-"] = pushSubtracao
+    tabelaSintatica["<op>"]["numero"] = Vazio
     tabelaSintatica["<op>"]["not"] = Vazio
     tabelaSintatica["<op>"]["identificador_valido"] = Vazio
     tabelaSintatica["<op>"]["abre_parenteses"] = Vazio
@@ -628,7 +628,6 @@ function construirTabelaSintaxica(){
     tabelaSintatica["<termo1>"]["numero"] = termo1
     tabelaSintatica["<termo1>"]["abre_parenteses"] = termo1
     tabelaSintatica["<termo1>"]["not"] = termo1
-    tabelaSintatica["<termo1>"]["identificador_valido"] = termo1
     
     tabelaSintatica["<termo2>"] = {}
     tabelaSintatica["<termo2>"]["ponto"] = Vazio
