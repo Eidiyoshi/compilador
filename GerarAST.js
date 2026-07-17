@@ -174,7 +174,7 @@ function ntDeclaracao_de_variavel2()
     {
         const declaracao_de_variavel1 = ntDeclaracao_de_variavel1();
         const declaracao_de_variavel2 = ntDeclaracao_de_variavel2();
-        consumirToken("ponto_e_virgula");
+        consumirToken("ponto_e_virgula");// WIP: acho que teria que mudar esse para cima, mas no TCC está assim
         return [...declaracao_de_variavel1, ...declaracao_de_variavel2];
     }
     else if(tokens_vazios.includes(tokenAtual()))
@@ -310,12 +310,12 @@ function ntDeclaracao_de_procedimento2()
     console.log("<declaracao_de_procedimento2>");
     console.log(tokenAtual())
     const tokens_aceitos = ["procedure"];
-    const tokens_vazios = [];
+    const tokens_vazios = [";", "begin"];
     if(tokens_aceitos.includes(tokenAtual()))
     {
         const declaracao_de_procedimento1 = ntDeclaracao_de_procedimento1();
         const declaracao_de_procedimento2 = ntDeclaracao_de_procedimento2();
-        consumirToken("ponto_e_virgula")
+        consumirToken("ponto_e_virgula"); // WIP: acho que a ordem está errada, mas na tabela do TCC está assim
         return [declaracao_de_procedimento1, ...declaracao_de_procedimento2];
     }
     else if(tokens_vazios.includes(tokenAtual()))
@@ -573,7 +573,7 @@ function ntComando2(nome)
         {
             consumirToken("atribuicao");
             const expressao1 = ntExpressao1();
-            return { tipo: "atribuicao", alvo: { tipo: "variavel", nome }, expressao1 };
+            return { tipo: "atribuicao", alvo: { tipo: "variavel", nome }, valor: expressao1 };
             // marca atribuição
         }
     }
@@ -812,7 +812,7 @@ function ntExpressao_simples1()
     if(tokens_aceitos.includes(tokenAtual()))
     {
         const op = ntOp();
-        const termo1 = ntTermo1();
+        let termo1 = ntTermo1();
         if (op === "-")
         {
             termo1 = { tipo: "unaria", operador: "-", operando: termo1 };
@@ -865,7 +865,7 @@ function ntExpressao_simples2()
         const op2 = ntOp2();
         const termo1 = ntTermo1();
         const expressao_simples2 = ntExpressao_simples2();
-        return [{ op2, termo1 }, ...expressao_simples2];
+        return [{ operador: op2, operando: termo1 }, ...expressao_simples2];
     }
     else if(tokens_vazios.includes(tokenAtual()))
     {
@@ -935,7 +935,7 @@ function ntTermo2()
         const op3 = ntOp3();
         const fator = ntFator();
         const termo2 = ntTermo2();
-        return [{ op3, fator }, ...termo2];
+        return [{ operador: op3, operando: fator }, ...termo2];
     }
     else if(tokens_vazios.includes(tokenAtual()))
     {
@@ -994,7 +994,7 @@ function ntFator()
         {
             const numero = valorAtual()
             consumirToken("numero");
-            return { tipo: "numero", valor };
+            return { tipo: "numero", numero };
             // marca numeros
         }
         else
