@@ -679,9 +679,9 @@ function construirTabelaSintaxica(){
     tabelaSintatica["<variavel2>"]["then"] = Vazio
     tabelaSintatica["<variavel2>"]["do"] = Vazio
     tabelaSintatica["<variavel2>"]["]"] = Vazio
-    tabelaSintatica["<variavel2>"]["*"] = termo2
-    tabelaSintatica["<variavel2>"]["/"] = termo2
-    tabelaSintatica["<variavel2>"]["and"] = termo2
+    tabelaSintatica["<variavel2>"]["*"] = Vazio
+    tabelaSintatica["<variavel2>"]["/"] = Vazio
+    tabelaSintatica["<variavel2>"]["and"] = Vazio
     tabelaSintatica["<variavel2>"]["atribuicao"] = Vazio
     tabelaSintatica["<variavel2>"]["+"] = Vazio
     tabelaSintatica["<variavel2>"]["-"] = Vazio
