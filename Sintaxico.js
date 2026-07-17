@@ -4,6 +4,8 @@ import { types, tokens } from "./Modulos/DefinicoesLexico.mjs";
 var pilha = [];
 var fila = [];
 var tabelaSintatica = {};
+var terminou = false;
+var ultimoPasso = "";
 // nos nao terminais que possuem duas variações com ', o com sem está finalizado como 1, enquanto o com está com 2
 // ex: <declaracao_de_variavel>  ==  <declaracao_de_variavel1>
 //     <declaracao_de_variavel'> ==  <declaracao_de_variavel2>
@@ -52,7 +54,7 @@ function declaracaoDeVariaveis1(){
     pilha.push("<lista_de_identificadores1>")
     pilha.push("<tipo>")
 
-    window.renderStack([...pilha]);
+    //window.renderStack([...pilha]); Tirei pq a função foi trocada
     return true
 }
 
@@ -716,6 +718,7 @@ function construirTabelaSintaxica(){
     
 }
 
+//Mantive a função antiga caso precise usar depois
 export function analisadorSintaxico(arrayTokens){
     construirTabelaSintaxica()
     fila = enfileirarTokens(arrayTokens);
@@ -747,4 +750,55 @@ export function analisadorSintaxico(arrayTokens){
     
 }
 
-export { pilha, fila };
+export function iniciarAnalise(arrayTokens){
+    construirTabelaSintaxica();
+
+    fila = enfileirarTokens(arrayTokens);
+    pilha = [];
+
+    terminou = false;
+    ultimoPasso = "";
+
+    declararErroSintaxico("");
+
+    pilha.push("<programa>");
+}
+
+export function proximoPasso(){
+    if(terminou)
+        return false;
+
+    if(fila.length == 0){
+        terminou = true;
+        return false;
+    }
+
+    if(fila[0] == "$"){
+        terminou = true;
+        ultimoPasso = "Análise concluída.";
+        return false;
+    }
+
+    let topo = pilha.at(-1);
+    let token = fila[0];
+
+    if(topo == token){
+        ultimoPasso = "Consumindo terminal '" + token + "'.";
+        RetirarAmbos();
+        return true;
+    }
+
+    const producao = tabelaSintatica[topo]?.[token];
+
+    if(!producao){
+        declararErroSintaxico("Erro sintático.\nTopo: " + topo + "\nToken: " + token);
+        terminou = true;
+        return false;
+    }
+
+    ultimoPasso = "Aplicando produção para " + topo + " usando " + token;
+    producao();
+    return true;
+}
+
+export { pilha, fila, terminou, ultimoPasso };

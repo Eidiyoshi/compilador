@@ -2,7 +2,7 @@ import { tokens, identifiers } from "./Modulos/DefinicoesLexico.mjs"
 import { isDigit, isLetter, isSpace, isMathOperator, isRelationalOperator, isInAlfabet, isSeparator, isReserved, isIdentifier } from "./Modulos/Comparadores.mjs"
 
 // deletar eventualmente
-import { analisadorSintaxico, pilha } from "./Sintaxico.js";
+import { iniciarAnalise, proximoPasso, analisadorSintaxico, pilha, fila, ultimoPasso } from "./Sintaxico.js";
 
 //Funcoes
 function pushToken(array, token, current_string, current_line, beginning_of_token, line_position)
@@ -395,8 +395,10 @@ function identifyToken(text) {
     // eventualmente retirar isso aq, pq o sintaxico esta sendo chamado pelo lexico
     // o que nao deveria acontecer por excesso de funcao
     // ------------------------------------------------------------------------------
-    analisadorSintaxico(real_result)
-    renderStack([...pilha]);
+    iniciarAnalise(real_result);
+    atualizarParser();
+    //analisadorSintaxico(real_result)
+    //renderStack([...pilha]);
 
     //console.log(real_result.join(" "))
 
@@ -464,17 +466,56 @@ function fillErrors(errors) {
     });
 }
 
-window.renderStack = function(stack) {
-    const stackView = document.getElementById("stackView");
-    stackView.innerHTML = "";
+//Essa parte aqui tem as funções de exibição da análise sintática
+function renderStack(){
+    const stack = document.getElementById("stackView");
+    stack.innerHTML="";
 
-    stack.forEach(item => {
-        const div = document.createElement("div");
-        div.className = "stack-item";
-        div.textContent = item;
-        stackView.appendChild(div);
+    [...pilha].reverse().forEach(simbolo=>{
+        const div=document.createElement("div");
+
+        div.className="stack-item";
+        div.textContent=simbolo;
+
+        stack.appendChild(div);
     });
 }
+
+function renderQueue(){
+    const queue = document.getElementById("queueView");
+    queue.innerHTML="";
+
+    fila.forEach((token,index)=>{
+        const div=document.createElement("div");
+
+        div.className="queue-item";
+
+        if(index==0)
+            div.style.background="#1f8a3b";
+
+        div.textContent=token;
+
+        queue.appendChild(div);
+    });
+
+}
+
+function atualizarParser(){
+    renderStack();
+    renderQueue();
+    document.getElementById("stepDescription").innerText=ultimoPasso;
+}
+
+document.getElementById("nextStepButton").addEventListener("click",()=>{
+    proximoPasso();
+    atualizarParser();
+});
+
+document.getElementById("runAllButton").addEventListener("click",()=>{
+    while(proximoPasso());
+    atualizarParser();
+});
+
 
 window.openTab = function(evt, tabName) {
     let tabcontent = document.getElementsByClassName("tab-content");

@@ -54,9 +54,27 @@
         </div>
 
         <div id="Tab2" class="tab-content">
+
             <section class="result">
-                <h2>Pilha de Símbolos</h2>
-                <div id="stackView" class="stack-view"></div>
+                <h2>Fila de Tokens</h2>
+                <div id="queueView"></div>
+            </section>
+
+            <div class="parser-body">
+                <section class="result">
+                    <h2>Pilha de Símbolos</h2>
+                    <div id="stackView" class="stack-view"></div>
+                </section>
+
+                <section class="result">
+                    <h2>Último Passo</h2>
+                    <div id="stepDescription"></div>
+                </section>
+            </div>
+
+            <section class="button">
+                <button id="nextStepButton">Próximo passo</button>
+                <button id="runAllButton">Executar tudo</button>
             </section>
 
             <section class="text" id="checkSintaxico"></section>
