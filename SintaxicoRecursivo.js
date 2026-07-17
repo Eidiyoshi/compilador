@@ -43,7 +43,7 @@ function exibirErroSintaxico(erroString)
 
 function gerarErro(mensagem)
 {
-    exibirErroSintaxico(mensagem);
+    //exibirErroSintaxico(mensagem);
     throw new ErroSintaxico(mensagem);
 }
 
@@ -70,7 +70,7 @@ function ntPrograma()
     ntIdentificador();
     consumirToken("ponto_e_virgula");
     ntBloco();
-    consumirToken("ponto");
+    consumirToken("ponto_final");
 }
 
 function ntBloco()

@@ -4,6 +4,10 @@ import { isDigit, isLetter, isSpace, isMathOperator, isRelationalOperator, isInA
 // deletar eventualmente
 import { iniciarAnalise, proximoPasso, analisadorSintaxico, pilha, fila, ultimoPasso } from "./Sintaxico.js";
 
+// teste
+import { gerarAST } from "./GerarAST.js"
+import { analisarSemantica } from "./Semantica.js"
+
 //Funcoes
 function pushToken(array, token, current_string, current_line, beginning_of_token, line_position)
 {
@@ -327,7 +331,7 @@ function identifyToken(text) {
                         }
                         else if(current_char !== "/")
                         {
-                            pushToken(real_result, tokens[7], current_string, current_line, beginning_of_token, line_position+1);
+                            pushToken(real_result, current_string, current_string, current_line, beginning_of_token, line_position+1);
                             current_token = "";
                             current_string = "";
                             if(!isSpace(contents[current_position+1]))
@@ -395,8 +399,14 @@ function identifyToken(text) {
     // eventualmente retirar isso aq, pq o sintaxico esta sendo chamado pelo lexico
     // o que nao deveria acontecer por excesso de funcao
     // ------------------------------------------------------------------------------
+    const tokensParaAST = [...real_result]; 
     iniciarAnalise(real_result);
     atualizarParser();
+    console.log("\n\n\n\n");
+    const AST = gerarAST(tokensParaAST);
+    console.log(AST);
+    const resultado1235 = analisarSemantica(AST);
+    console.log(resultado1235)
     //analisadorSintaxico(real_result)
     //renderStack([...pilha]);
 

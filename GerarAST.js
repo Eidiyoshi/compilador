@@ -62,7 +62,7 @@ function valorAtual() {
 function consumirToken(tokenEsperado)
 {
     if (tokenAtual() !== tokenEsperado) {
-        gerarErro(`ERRO sintaxico: esperado "${tokenEsperado}", encontrado "${tokenAtual()}"`); // a existência do ` para manipular strings prova que javascript é uma desgraça
+        gerarErro(`ERRO geracao AST: esperado "${tokenEsperado}", encontrado "${tokenAtual()}"`); // a existência do ` para manipular strings prova que javascript é uma desgraça
     }
     posicao++;
 }
@@ -70,7 +70,7 @@ function consumirToken(tokenEsperado)
 function combinarEsquerda(base, lista) {
     let resultado = base;
     for (const { operador, operando } of lista) {
-        resultado = { tipo: "binaria", operador, esquerda: resultado, direita: operando };
+        resultado = { tipo: "binaria", operador: operador, esquerda: resultado, direita: operando };
     }
     return resultado;
 }
@@ -84,8 +84,8 @@ function ntPrograma()
     ntIdentificador();
     consumirToken("ponto_e_virgula");
     const bloco = ntBloco();
-    consumirToken("ponto");
-    return { tipo: "programa", nome, bloco };
+    consumirToken("ponto_final");
+    return { tipo: "programa", nome: nome, bloco: bloco };
     // marca o inicio do programa
 }
 
@@ -110,7 +110,7 @@ function ntBloco()
     }
     else
     {
-        gerarErro(`ERRO sintaxico: bloco invalido`);
+        gerarErro(`ERRO geracao AST: bloco invalido`);
     }
 }
 
@@ -135,7 +135,7 @@ function ntParte_de_declaracoes_de_variaveis()
     }
     else
     {
-        gerarErro(`ERRO sintaxico: parte_de_declaracoes_de_variaveis invalido`);
+        gerarErro(`ERRO geracao AST: parte_de_declaracoes_de_variaveis invalido`);
     }
 }
 
@@ -159,7 +159,7 @@ function ntDeclaracao_de_variavel1()
     }
     else
     {
-        gerarErro(`ERRO sintaxico: declaracao_de_variavel1 invalido`);
+        gerarErro(`ERRO geracao AST: declaracao_de_variavel1 invalido`);
     }
 }
 
@@ -183,7 +183,7 @@ function ntDeclaracao_de_variavel2()
     }
     else
     {
-        gerarErro(`ERRO sintaxico: declaracao_de_variavel2 invalido`);
+        gerarErro(`ERRO geracao AST: declaracao_de_variavel2 invalido`);
     }
 }
 
@@ -204,7 +204,7 @@ function ntIdentificador()
     }
     else
     {
-        gerarErro(`ERRO sintaxico: identificador invalido`);
+        gerarErro(`ERRO geracao AST: identificador invalido`);
     }
 }
 
@@ -228,7 +228,7 @@ function ntLista_de_identificadores1()
     }
     else
     {
-        gerarErro(`ERRO sintaxico: lista_de_identificadores1 invalido`);
+        gerarErro(`ERRO geracao AST: lista_de_identificadores1 invalido`);
     }
 }
 
@@ -253,7 +253,7 @@ function ntLista_de_identificadores2()
     }
     else
     {
-        gerarErro(`ERRO sintaxico: lista_de_identificadores2 invalido`);
+        gerarErro(`ERRO geracao AST: lista_de_identificadores2 invalido`);
     }
 }
 
@@ -276,7 +276,7 @@ function ntTipo()
     }
     else
     {
-        gerarErro(`ERRO sintaxico: tipo invalido`);
+        gerarErro(`ERRO geracao AST: tipo invalido`);
     }
 }
 
@@ -300,7 +300,7 @@ function ntParte_de_declaracoes_de_subrotinas()
     }
     else
     {
-        gerarErro(`ERRO sintaxico: parte_de_declaracoes_de_subrotinas invalido`);
+        gerarErro(`ERRO geracao AST: parte_de_declaracoes_de_subrotinas invalido`);
     }
 }
 
@@ -324,7 +324,7 @@ function ntDeclaracao_de_procedimento2()
     }
     else
     {
-        gerarErro(`ERRO sintaxico: declaracao_de_procedimento2 invalido`);
+        gerarErro(`ERRO geracao AST: declaracao_de_procedimento2 invalido`);
     }
 }
 
@@ -352,7 +352,7 @@ function ntDeclaracao_de_procedimento1()
     }
     else
     {
-        gerarErro(`ERRO sintaxico: declaracao_de_procedimento1 invalido`);
+        gerarErro(`ERRO geracao AST: declaracao_de_procedimento1 invalido`);
     }
 }
 
@@ -377,7 +377,7 @@ function ntParametros_formais1()
     }
     else
     {
-        gerarErro(`ERRO sintaxico: parametros_formais1 invalido`);
+        gerarErro(`ERRO geracao AST: parametros_formais1 invalido`);
     }
 }
 
@@ -401,7 +401,7 @@ function ntParametros_formais2()
     }
     else
     {
-        gerarErro(`ERRO sintaxico: parametros_formais2 invalido`);
+        gerarErro(`ERRO geracao AST: parametros_formais2 invalido`);
     }
 }
 
@@ -427,7 +427,7 @@ function ntSecao_de_parametros_formais()
     }
     else
     {
-        gerarErro(`ERRO sintaxico: secaoDeParametrosFormais invalido`);
+        gerarErro(`ERRO geracao AST: secaoDeParametrosFormais invalido`);
     }
 }
 
@@ -448,7 +448,7 @@ function ntVar()
     }
     else
     {
-        gerarErro(`ERRO sintaxico: var invalido`);
+        gerarErro(`ERRO geracao AST: var invalido`);
     }
 }
 
@@ -476,7 +476,7 @@ function ntComando_composto1()
     }
     else
     {
-        gerarErro(`ERRO sintaxico: comando_composto1 invalido`);
+        gerarErro(`ERRO geracao AST: comando_composto1 invalido`);
     }
 }
 
@@ -500,7 +500,7 @@ function ntComando_composto2()
     }
     else
     {
-        gerarErro(`ERRO sintaxico: comando_composto2 invalido`);
+        gerarErro(`ERRO geracao AST: comando_composto2 invalido`);
     }
 }
 
@@ -549,7 +549,7 @@ function ntComando1()
     }
     else
     {
-        gerarErro(`ERRO sintaxico: comando1 invalido`);
+        gerarErro(`ERRO geracao AST: comando1 invalido`);
     }
 }
 
@@ -583,7 +583,7 @@ function ntComando2(nome)
     }
     else
     {
-        gerarErro(`ERRO sintaxico: comando2 invalido`);
+        gerarErro(`ERRO geracao AST: comando2 invalido`);
     }
 }
 
@@ -606,7 +606,7 @@ function ntAtribuicao() //está na tabela do TCC, mas n é usado
     }
     else
     {
-        gerarErro(`ERRO sintaxico: atribuicao invalido`);
+        gerarErro(`ERRO geracao AST: atribuicao invalido`);
     }
 }
 
@@ -628,7 +628,7 @@ function ntChamada_de_procedimento1() //está na tabela do TCC, mas n é usado
     }
     else
     {
-        gerarErro(`ERRO sintaxico: chamada_de_procedimento1 invalido`);
+        gerarErro(`ERRO geracao AST: chamada_de_procedimento1 invalido`);
     }
 }
 
@@ -651,7 +651,7 @@ function ntChamada_de_procedimento2()
     }
     else
     {
-        gerarErro(`ERRO sintaxico: chamada_de_procedimento2 invalido`);
+        gerarErro(`ERRO geracao AST: chamada_de_procedimento2 invalido`);
     }
 }
 
@@ -676,7 +676,7 @@ function ntComando_condicional_1() //está na tabela do TCC, mas n é usado
     }
     else
     {
-        gerarErro(`ERRO sintaxico: comando_condicional_1 invalido`);
+        gerarErro(`ERRO geracao AST: comando_condicional_1 invalido`);
     }
 }
 
@@ -698,7 +698,7 @@ function ntElse()
     }
     else
     {
-        gerarErro(`ERRO sintaxico: else invalido`);
+        gerarErro(`ERRO geracao AST: else invalido`);
     }
 }
 
@@ -722,7 +722,7 @@ function ntComando_repetitivo_1() //está na tabela do TCC, mas n é usado
     }
     else
     {
-        gerarErro(`ERRO sintaxico: comando_repetitivo_1 invalido`);
+        gerarErro(`ERRO geracao AST: comando_repetitivo_1 invalido`);
     }
 }
 
@@ -739,7 +739,7 @@ function ntExpressao1()
         const expressao2 = ntExpressao2();
         if (expressao2)
         { 
-            return { tipo: "binaria", operador: expressao2.operador, expressao_simples1, direita: expressao2.direita };
+            return { tipo: "binaria", operador: expressao2.operador, esquerda: expressao_simples1, direita: expressao2.direita };
             // marca expressões binarias
             // o .direita da expressao2 surge do termo1 e expressao_simples1
         }
@@ -751,7 +751,7 @@ function ntExpressao1()
     }
     else
     {
-        gerarErro(`ERRO sintaxico: expressao1 invalido`);
+        gerarErro(`ERRO geracao AST: expressao1 invalido`);
     }
 }
 
@@ -766,7 +766,7 @@ function ntExpressao2()
     {
         const relacao = ntRelacao();
         const expressao_simples1 = ntExpressao_simples1();
-        return { relacao, expressao_simples1 };
+        return { operador: relacao, direita: expressao_simples1 };
         // monta a comparacao
     }
     else if(tokens_vazios.includes(tokenAtual()))
@@ -775,7 +775,7 @@ function ntExpressao2()
     }
     else
     {
-        gerarErro(`ERRO sintaxico: expressao2 invalido`);
+        gerarErro(`ERRO geracao AST: expressao2 invalido`);
     }
 }
 
@@ -798,7 +798,7 @@ function ntRelacao()
     }
     else
     {
-        gerarErro(`ERRO sintaxico: relacao invalido`);
+        gerarErro(`ERRO geracao AST: relacao invalido`);
     }
 }
 
@@ -826,7 +826,7 @@ function ntExpressao_simples1()
     }
     else
     {
-        gerarErro(`ERRO sintaxico: expressao_simples1 invalido`);
+        gerarErro(`ERRO geracao AST: expressao_simples1 invalido`);
     }
 }
 
@@ -849,7 +849,7 @@ function ntOp()
     }
     else
     {
-        gerarErro(`ERRO sintaxico: op invalido`);
+        gerarErro(`ERRO geracao AST: op invalido`);
     }
 }
 
@@ -873,7 +873,7 @@ function ntExpressao_simples2()
     }
     else
     {
-        gerarErro(`ERRO sintaxico: expressao_simples2 invalido`);
+        gerarErro(`ERRO geracao AST: expressao_simples2 invalido`);
     }
 }
 
@@ -896,7 +896,7 @@ function ntOp2()
     }
     else
     {
-        gerarErro(`ERRO sintaxico: op2 invalido`);
+        gerarErro(`ERRO geracao AST: op2 invalido`);
     }
 }
 
@@ -919,7 +919,7 @@ function ntTermo1()
     }
     else
     {
-        gerarErro(`ERRO sintaxico: termo1 invalido`);
+        gerarErro(`ERRO geracao AST: termo1 invalido`);
     }
 }
 
@@ -943,7 +943,7 @@ function ntTermo2()
     }
     else
     {
-        gerarErro(`ERRO sintaxico: termo2 invalido`);
+        gerarErro(`ERRO geracao AST: termo2 invalido`);
     }
 }
 
@@ -966,7 +966,7 @@ function ntOp3()
     }
     else
     {
-        gerarErro(`ERRO sintaxico: op3 invalido`);
+        gerarErro(`ERRO geracao AST: op3 invalido`);
     }
 }
 
@@ -994,7 +994,7 @@ function ntFator()
         {
             const numero = valorAtual()
             consumirToken("numero");
-            return { tipo: "numero", numero };
+            return { tipo: "numero", valor: numero };
             // marca numeros
         }
         else
@@ -1011,7 +1011,7 @@ function ntFator()
     }
     else
     {
-        gerarErro(`ERRO sintaxico: fator invalido`);
+        gerarErro(`ERRO geracao AST: fator invalido`);
     }
 }
 
@@ -1037,7 +1037,7 @@ function ntVariavel1()
     }
     else
     {
-        gerarErro(`ERRO sintaxico: variavel1 invalido`);
+        gerarErro(`ERRO geracao AST: variavel1 invalido`);
     }
 }
 
@@ -1073,7 +1073,7 @@ function ntVariavel2()
     }
     else
     {
-        gerarErro(`ERRO sintaxico: variavel2 invalido`);
+        gerarErro(`ERRO geracao AST: variavel2 invalido`);
     }
 }
 
@@ -1096,7 +1096,7 @@ function ntLista_de_expressoes1()
     }
     else
     {
-        gerarErro(`ERRO sintaxico: lista_de_expressoes1 invalido`);
+        gerarErro(`ERRO geracao AST: lista_de_expressoes1 invalido`);
     }
 }
 
@@ -1120,7 +1120,7 @@ function ntLista_de_expressoes2()
     }
     else
     {
-        gerarErro(`ERRO sintaxico: lista_de_expressoes2 invalido`);
+        gerarErro(`ERRO geracao AST: lista_de_expressoes2 invalido`);
     }
 }
 
@@ -1142,7 +1142,7 @@ function nt()
     }
     else
     {
-        gerarErro(`ERRO sintaxico:  invalido`);
+        gerarErro(`ERRO geracao AST:  invalido`);
     }
 }
 */
@@ -1159,7 +1159,7 @@ export function gerarAST(arrayTokens){
         const ast = ntPrograma();
  
         if (tokenAtual() !== "$") {
-            gerarErro("ERRO sintaxico: tokens sobrando apos o fim do programa");
+            gerarErro("ERRO geracao AST: tokens sobrando apos o fim do programa");
         }
         return ast;
     } catch (e) {

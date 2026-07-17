@@ -401,7 +401,7 @@ function verificarOperadorBinario(operador, tipo_esquerda, tipo_direita)
     }
 }
 
-export function analisadorSemantico(AST)
+export function analisarSemantica(AST)
 {
     erros = [];
     avisos = [];
