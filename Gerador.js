@@ -116,17 +116,12 @@ function inicializarTabelaSimbolos()
   tabela_simbolo.inserir({ cadeia: "false", token: "identificador_valido", categoria: "const", tipo: "boolean", valor: false, escopo: -1 });
 }
 
-function emitirInstrucao(codigo, par1 = null, par2 = null) {
+function emitirInstrucao(codigo, valor = null) {
   const instrucao = { codigo };
 
-  if(par1 !== null)
+  if(valor !== null)
   { 
-    instrucao.par1 = par1;
-  }
-
-  if(par2 !== null)
-  {
-    instrucao.par2 = par2;
+    instrucao.valor = valor;
   }
 
   vetor_codigo.push(instrucao);
@@ -136,16 +131,16 @@ function emitirInstrucao(codigo, par1 = null, par2 = null) {
   return vetor_codigo.length - 1;
 }
 
-function gerarInstrucao(codigo, par1 = null, par2 = null)
+function gerarInstrucao(codigo, valor = null)
 {
   if(dentro_de_procedimento > 0) return null;
-  return emitirInstrucao(codigo, par1, par2);
+  return emitirInstrucao(codigo, valor);
 }
 
-function corrigirInstrucao(posicaoInstrucao, novoPar1)
+function corrigirInstrucao(posicao_instrucao, novo_valor)
 {
-  if(posicaoInstrucao === null || posicaoInstrucao === undefined) return;
-  vetor_codigo[posicaoInstrucao].par1 = novoPar1;
+  if(posicao_instrucao === null || posicao_instrucao === undefined) return;
+  vetor_codigo[posicao_instrucao].valor = novo_valor;
 }
 
 function proximoEndereco(escopo)
@@ -1478,7 +1473,7 @@ export function geradorDeCodigo(arrayTokens) {
 
   return {
     codigoMEPA: vetor_codigo,
-    tabelaDeSimbolos: tabela_simbolo.tabela.filter(r => r.escopo >= 0),
+    tabelaDeSimbolos: tabela_simbolo.tabela,
     erros,
     avisos,
     notas
@@ -1488,13 +1483,4 @@ export function geradorDeCodigo(arrayTokens) {
 export function analisadorSemantico(arrayTokens) {
   const { tabelaDeSimbolos, erros, avisos } = geradorDeCodigo(arrayTokens);
   return { tabelaDeSimbolos, erros, avisos };
-}
-
-export function formatarCodigoMEPA(codigoMEPA) {
-  return codigoMEPA
-    .map((instr, idx) => {
-      const args = [instr.par1, instr.par2].filter(v => v !== undefined).join(" ");
-      return `${String(idx).padStart(3, " ")}: ${instr.codigo}${args ? " " + args : ""}`;
-    })
-    .join("\n");
 }
