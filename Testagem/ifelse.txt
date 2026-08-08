@@ -1,0 +1,19 @@
+program exemplo_1;
+int a, b;
+boolean q, p;
+begin
+    if (a>b)
+    then
+     begin
+        q := p and q
+    end
+    else if(a < 2 * b)
+    then
+    begin
+        p := true
+    end
+    else
+     begin
+        q := false
+      end
+end.

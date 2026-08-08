@@ -1211,7 +1211,7 @@ function ntTermo2(tipoAcumulado)
     console.log("------------------------");
     console.log("<termo2>");
     console.log(tokenAtual())
-    let tokens_aceitos = ["*", "/", "and"];
+    let tokens_aceitos = ["*", "div", "and"];
     let tokens_vazios = ["ponto", "ponto_e_virgula", "procedure", "begin", "virgula", "fecha_parenteses", "end", "else", "then", "do", "+", "-", "]", "=", "<>", ">", ">=", "<", "<="];
     if(tokens_aceitos.includes(tokenAtual()))
     {
@@ -1229,7 +1229,7 @@ function ntTermo2(tipoAcumulado)
         }
 
         if (token === "*") gerarInstrucao("MULT");
-        else if (token === "/") gerarInstrucao("DIVI");
+        else if (token === "div") gerarInstrucao("DIVI");
         else gerarInstrucao("CONJ");
 
         const expressao = ntTermo2(esperado);
@@ -1251,7 +1251,7 @@ function ntOp3()
     console.log("------------------------");
     console.log("<op3>");
     console.log(tokenAtual())
-    let tokens_aceitos = ["*", "/", "and"];
+    let tokens_aceitos = ["*", "div", "and"];
     let tokens_vazios = [];
     if(tokens_aceitos.includes(tokenAtual()))
     {
@@ -1359,7 +1359,7 @@ function ntVariavel2(tipoBase)
     console.log("<variavel2>");
     console.log(tokenAtual())
     let tokens_aceitos = ["abre_parenteses", "["];
-    let tokens_vazios = ["*", "/", "and", "ponto", "ponto_e_virgula", "procedure", "begin", "virgula", "fecha_parenteses", "end", "else", "then", "do", "+", "-", "]", "=", "<>", ">", ">=", "<", "<=", "atribuicao"];
+    let tokens_vazios = ["*", "div", "and", "ponto", "ponto_e_virgula", "procedure", "begin", "virgula", "fecha_parenteses", "end", "else", "then", "do", "+", "-", "]", "=", "<>", ">", ">=", "<", "<=", "atribuicao"];
     if(tokens_aceitos.includes(tokenAtual()))
     {
         if(tokenAtual() == tokens_aceitos[0])//WIP

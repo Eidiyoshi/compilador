@@ -1,0 +1,8 @@
+program exemplo_1;
+int a;
+boolean q;
+begin
+    if (q)
+    then a := 1
+    else a := 2
+end.

@@ -3,7 +3,7 @@ const symbols = [
 ];
 
 const math_operator = [
-    "+","-","*","/"
+    "+","-","*"
 ]
 
 const comment = [
@@ -33,8 +33,8 @@ const types = [
 ];
 
 const temp_reserved = [//,"read","write"
-    "program","procedure","true","false","begin","end","if","then","else","while","do","and","or","not",
-    "+","-","*","/"
+    "program","procedure","true","false","begin","end","if","then","else","while","do","and","or","not","div",
+    "+","-","*"
 ];
 
 const relational_operator = [

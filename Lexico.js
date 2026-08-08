@@ -56,9 +56,9 @@ function identifyToken(text) {
         var beginning_of_token = 0;
         var line_position = 0;
 
-        const max_length = 10; // +1 para o caractere nulo
+        const max_length = 20; // +1 para o caractere nulo
 
-        while(current_position <= contents.length) 
+        while(current_position < contents.length) 
         {
             var current_char = contents[current_position];
 
@@ -108,9 +108,11 @@ function identifyToken(text) {
             {
                 if(!isSeparator(current_char))
                 {
-                    if(current_token === tokens[8]) // operacao_relacional
+                    if(isRelationalOperator(current_token)) // operacao_relacional
                     {
                         pushToken(real_result, current_token, current_string, current_line, beginning_of_token, line_position);
+                        current_token = "";
+                        current_string = "";
                     }
                     if(current_token === "")
                     {
@@ -153,12 +155,12 @@ function identifyToken(text) {
                         if(isLetter(current_char) || isDigit(current_char))
                         {
                             current_string += current_char;
-                            if(isReserved(current_string))
+                            if(isReserved(current_string) && !isLetter(contents[current_position + 1]) && !isDigit(contents[current_position + 1]))
                             {
                                 if(current_string === "true" || current_string === "false")
                                 {
                                     current_token = tokens[3]; // Literal booleano
-                                    pushToken(real_result, current_token, current_string, current_line, beginning_of_token, line_position);
+                                    pushToken(real_result, tokens[0], current_string, current_line, beginning_of_token, line_position);
                                     current_token = "";
                                     current_string = "";
                                 }
@@ -301,52 +303,50 @@ function identifyToken(text) {
                         current_token = "";
                         current_string = "";
                     }
+                    else if(current_char === "/")
+                    {
+                        if(current_token !== "")
+                        {
+                            checkIfEnded(current_token, current_string, real_result, errors, current_line, beginning_of_token, line_position, max_length)
+                            current_token = "";
+                            current_string = "";
+                        }
+                        if(contents[current_position + 1] === "/")
+                        {
+                            console.log("Comentario encontrado na linha " + current_line + " na posicao " + line_position);
+                            current_position += 2;
+                            line_position += 2;
+                            while(current_position < contents.length && contents[current_position] !== "\n")
+                            {
+                                current_position++;
+                                line_position++;
+                            }
+                            current_position--;
+                            line_position--;
+                        }
+                        else
+                        {
+                            pushToken(errors, tokens[13], "/", current_line, line_position, line_position+1);
+                        }
+                    }
                     else if(isMathOperator(current_char))
                     {
                         console.log("Operador matematico encontrado: " + current_char);
                         if(current_token !== "")
                         {
                             checkIfEnded(current_token, current_string, real_result, errors, current_line, beginning_of_token, line_position, max_length)
-                            //line_position++;
-                            current_position++;
                             current_token = tokens[7]; // operacao_matematica
                             current_string = "";
                         }
                         current_string += current_char;
-                        if(current_string === "//")
-                        {
-                            current_string = "";
-                            current_token = "";
-                            console.log("Comentario encontrado na linha " + current_line + " na posicao " + line_position);
-                            var aux = current_char;
-                            while(aux !== "\n" && current_position < contents.length)
-                            {
-                                aux = contents[current_position];
-                                if(aux === "\n") 
-                                {
-                                    current_line++;
-                                    line_position = 0;
-                                }
-                                current_position++;
-                                line_position++;
-                            }
-                        }
-                        else if(current_char !== "/")
-                        {
-                            pushToken(real_result, current_string, current_string, current_line, beginning_of_token, line_position+1);
-                            current_token = "";
-                            current_string = "";
-                            if(!isSpace(contents[current_position+1]))
-                            {
-                                current_position--;
-                                line_position--;
-                            }
-                        }
+                        pushToken(real_result, current_string, current_string, current_line, beginning_of_token, line_position+1);
+                        current_token = "";
+                        current_string = "";
                     }
                     else if(isRelationalOperator(current_char))
                     {
                         console.log("Operador relacional encontrado: " + current_char);
-                        if(current_token !== "" && current_token !== tokens[8]) // operacao_relacional                      
+                        if(current_token !== "" && !isRelationalOperator(current_token)) // operacao_relacional                      
                         {
                             checkIfEnded(current_token, current_string, real_result, errors, current_line, beginning_of_token, line_position, max_length)
                             //line_position++;
@@ -354,9 +354,15 @@ function identifyToken(text) {
                             current_token = "";
                             current_string = "";
                         }
+
+                        if(current_string === "")
+                        {
+                            beginning_of_token = line_position;
+                        }
+
                         current_string += current_char;
                         current_token = current_string; // operacao_relacional
-                        beginning_of_token = line_position;
+                        
                         if(current_string === "<=" || current_string === ">=" || current_string === "<>")
                         {
                             pushToken(real_result, current_string, current_string, current_line, beginning_of_token-1, line_position+1);
@@ -371,7 +377,6 @@ function identifyToken(text) {
                 console.log("Caractere invalido encontrado: " + current_char);
                 if(current_token !== "") // operacao_relacional                      
                 {
-                    checkIfEnded(current_token, current_string, real_result, errors, current_line, beginning_of_token, line_position, max_length)
                     //line_position++;
                     //current_position++;
                     current_token = "";
@@ -383,6 +388,11 @@ function identifyToken(text) {
             }
             current_position++;
             line_position++;
+        }
+
+        if(current_token !== "")
+        {
+            checkIfEnded(current_token, current_string, real_result, errors, current_line, beginning_of_token, line_position, max_length);
         }
         //errors;
         errors.pop();
