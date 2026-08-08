@@ -4,10 +4,6 @@ import { isDigit, isLetter, isSpace, isMathOperator, isRelationalOperator, isInA
 // deletar eventualmente
 import { iniciarAnalise, proximoPasso, analisadorSintaxico, pilha, fila, ultimoPasso } from "./Sintaxico.js";
 
-// teste
-import { gerarAST } from "./GerarAST.js"
-import { analisarSemantica } from "./Semantica.js"
-
 import { geradorDeCodigo } from "./Gerador.js"
 
 //Funcoes
@@ -407,26 +403,14 @@ function identifyToken(text) {
 
     console.log(real_result);
 
-    // ------------------------------------------------------------------------------
-    // eventualmente retirar isso aq, pq o sintaxico esta sendo chamado pelo lexico
-    // o que nao deveria acontecer por excesso de funcao
-    // ------------------------------------------------------------------------------
-    /*
-    const tokensParaAST = [...real_result]; 
-    iniciarAnalise(real_result);
-    atualizarParser();
-    console.log("\n\n\n\n");
-    const AST = gerarAST(tokensParaAST);
-    console.log(AST);
-    const resultado1235 = analisarSemantica(AST);
-    console.log(resultado1235)
-    */
-
     //analisadorSintaxico(real_result)
     //renderStack([...pilha]);
 
     //console.log(real_result.join(" "))
     
+    iniciarAnalise(real_result);
+    atualizarParser();
+
     console.log("Gerando código\n\n\n");
     const resultado = geradorDeCodigo(real_result);
     console.log(resultado.codigoMEPA);
