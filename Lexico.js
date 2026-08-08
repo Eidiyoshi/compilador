@@ -8,6 +8,8 @@ import { iniciarAnalise, proximoPasso, analisadorSintaxico, pilha, fila, ultimoP
 import { gerarAST } from "./GerarAST.js"
 import { analisarSemantica } from "./Semantica.js"
 
+import { geradorDeCodigo } from "./Gerador.js"
+
 //Funcoes
 function pushToken(array, token, current_string, current_line, beginning_of_token, line_position)
 {
@@ -399,6 +401,7 @@ function identifyToken(text) {
     // eventualmente retirar isso aq, pq o sintaxico esta sendo chamado pelo lexico
     // o que nao deveria acontecer por excesso de funcao
     // ------------------------------------------------------------------------------
+    /*
     const tokensParaAST = [...real_result]; 
     iniciarAnalise(real_result);
     atualizarParser();
@@ -407,10 +410,16 @@ function identifyToken(text) {
     console.log(AST);
     const resultado1235 = analisarSemantica(AST);
     console.log(resultado1235)
+    */
+
     //analisadorSintaxico(real_result)
     //renderStack([...pilha]);
 
     //console.log(real_result.join(" "))
+    
+    console.log("Gerando código\n\n\n");
+    const resultado = geradorDeCodigo(real_result);
+    console.log(resultado.codigoMEPA);
 
     //return real_result;
 }

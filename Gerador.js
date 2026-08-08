@@ -1,77 +1,293 @@
-import { types, tokens } from "./Modulos/DefinicoesLexico.mjs";
-// globalizar para facilitar a recursão
+/*
+ * Algumas observações:
+ *  - Foi criado um writeln para que os exemplos da aula funcionem, mas não há slides cobrindo a implementação do writeln.
+ *     Então foi suposto que o writeln funciona como o write, mas com uma quebra de linha no final (comando IMPE).
+ *
+ */
+
+const MAPA_RELACIONAL = {
+  "=": "CMIG",
+  "<>": "CMDG",
+  ">": "CMMA",
+  ">=": "CMAG",
+  "<": "CMME",
+  "<=": "CMEG"
+};
 
 var fila = [];
 var posicao = 0;
+var escopo_atual = 0;
+var tabela_simbolo = null;
+var erros = [];
+var avisos = [];
+var notas = [];
 
-// nos nao terminais que possuem duas variações com ', o com sem está finalizado como 1, enquanto o com está com 2
-// ex: <declaracao_de_variavel>  ==  <declaracao_de_variavel1>
-//     <declaracao_de_variavel'> ==  <declaracao_de_variavel2>
+var vetor_codigo = [];
+var enderecos = {};
+var dentro_de_procedimento = 0; //gambearra para não gerar código dentro de procedimentos
+var emLeitura = false;
+var emEscrita = false;
 
-// terminais estao escrito em extenso
-// ex: ; == ponto_e_virgula
+class TabelaSimbolos 
+{
+  constructor() 
+  {
+    this.tabela = [];
+  }
 
-// tudo esta sendo feito baseado na tabela sintatica na qual o orientando do celso fez
+  inserir({ cadeia, token, categoria, tipo = null, valor = null, escopo = 0, extra = {} })
+  {
+    const registro = { cadeia, token, categoria, tipo, valor, escopo, utilizada: false, ...extra };
+    this.tabela.push(registro);
+    console.log(`inserindo na tabela de símbolos: ${JSON.stringify(registro)}`);//DEBUG
+    return registro;
+  }
 
-//Uso:
-// analisadorSintaxico(arrayTokens)
-//
-//Retorno:
-//nada se der certo, erro se der errado
-
-//Preparar fila
-
-function enfileirarTokens(arrayTokens){
-    var fila = [];
-    while(arrayTokens.length != 0){ 
-        var tokenInteiroAtual = arrayTokens.shift();
-        var tokenAtual = tokenInteiroAtual.token;
-        fila.push(tokenAtual);
+  buscar(cadeia, { categoria = null, escopo_atual = null } = {})
+  {
+    for (let i = this.tabela.length - 1; i >= 0; i--)
+    {
+      const r = this.tabela[i];
+      if(r.cadeia !== cadeia) continue;
+      if(categoria && r.categoria !== categoria) continue;
+      if(escopo_atual !== null && r.escopo > escopo_atual) continue;
+      return r;
     }
-    fila.push("$")
-    return fila;
+    return null;
+  }
+
+  existeNoEscopo(cadeia, escopo)
+  {
+    return this.tabela.some(r => r.cadeia === cadeia && r.escopo === escopo);
+  }
+
+  removerEscopo(escopo)
+  {
+    this.tabela = this.tabela.filter(r => r.escopo !== escopo);
+  }
 }
 
-//Erro
+class ErroSintatico extends Error {}
 
-class ErroSintaxico extends Error {}
+function gerarErro(msg) {
+  throw new ErroSintatico(`${msg} - encontrado "${tokenAtual()}" ("${lexemaAtual()}") na posição ${posicao}`);
+}
 
-function exibirErroSintaxico(erroString)
+function erroSemantico(msg)
 {
-    document.getElementById("checkSintaxico").textContent = erroString;
+  erros.push(`Erro semântico próximo de "${lexemaAtual()}": ${msg}`);
 }
 
-function gerarErro(mensagem)
+function gerarNota(msg)
 {
-    //exibirErroSintaxico(mensagem);
-    throw new ErroSintaxico(mensagem);
+  notas.push(`Nota (geração de código) próximo de "${lexemaAtual()}": ${msg}`);
 }
 
-//Terminal
+function enfileirarTokens(array_tokens)
+{
+  const f = array_tokens.map(tk => ({ token: tk.token, lexema: tk.lexema ?? tk.token }));
+  f.push({ token: "$", lexema: "$" });
+  return f;
+}
 
 function tokenAtual()
 {
-    return fila[posicao]; //tirei o .shft, pq não quero criar um parâmetro a mais para todas as funções
+  return fila[posicao] ? fila[posicao].token : "$";
+}
+
+function lexemaAtual()
+{
+  return fila[posicao] ? fila[posicao].lexema : "$";
+}
+
+function inicializarTabelaSimbolos()
+{
+  //Qualquer coisa que não seja C é tão prático
+  ["int", "boolean"].forEach(t =>
+    tabela_simbolo.inserir({ cadeia: t, token: t, categoria: "tipo", escopo: -1 })
+  );
+
+  ["read", "write", "writeln"].forEach(p =>
+    tabela_simbolo.inserir({ cadeia: p, token: "identificador_valido", categoria: "proc", escopo: -1, extra: { parametros: null } })
+  );
+
+  tabela_simbolo.inserir({ cadeia: "true", token: "identificador_valido", categoria: "const", tipo: "boolean", valor: true, escopo: -1 });
+  tabela_simbolo.inserir({ cadeia: "false", token: "identificador_valido", categoria: "const", tipo: "boolean", valor: false, escopo: -1 });
+}
+
+function emitirInstrucao(codigo, par1 = null, par2 = null) {
+  const instrucao = { codigo };
+
+  if(par1 !== null)
+  { 
+    instrucao.par1 = par1;
+  }
+
+  if(par2 !== null)
+  {
+    instrucao.par2 = par2;
+  }
+
+  vetor_codigo.push(instrucao);
+
+  console.log(`emitindo instrução: ${JSON.stringify(instrucao)}`);//DEBUG
+
+  return vetor_codigo.length - 1;
+}
+
+function gerarInstrucao(codigo, par1 = null, par2 = null)
+{
+  if(dentro_de_procedimento > 0) return null;
+  return emitirInstrucao(codigo, par1, par2);
+}
+
+function corrigirInstrucao(posicaoInstrucao, novoPar1)
+{
+  if(posicaoInstrucao === null || posicaoInstrucao === undefined) return;
+  vetor_codigo[posicaoInstrucao].par1 = novoPar1;
+}
+
+function proximoEndereco(escopo)
+{
+  if(enderecos[escopo] === undefined) enderecos[escopo] = 0;
+  return enderecos[escopo]++;
 }
 
 function consumirToken(tokenEsperado)
 {
-    console.log(`Consumindo token: ${tokenAtual()}`);
-    if (tokenAtual() !== tokenEsperado) {
-        gerarErro(`ERRO sintaxico: esperado "${tokenEsperado}", encontrado "${tokenAtual()}"`); // a existência do ` para manipular strings prova que javascript é uma desgraça
-    }
-    posicao++;
+  console.log(`Consumindo token: Atual: ${tokenAtual()} Esperado: ${tokenEsperado}`);
+  if(tokenAtual() !== tokenEsperado)
+  {
+    erroSintatico(`esperado "${tokenEsperado}", encontrado "${tokenAtual()}"`);
+  }
+  posicao++;
 }
 
-//Não terminais
-
-function ntPrograma()
+function pegarIdentificador()
 {
+  const lex = lexemaAtual();
+  consumirToken("identificador_valido");
+  return lex;
+}
+
+function validarTipo(lexemaTipo) {
+  if(lexemaTipo === "int" || lexemaTipo === "boolean") return lexemaTipo;
+  erroSemantico(`tipo "${lexemaTipo}" desconhecido (use "int" ou "boolean")`);
+  return null;
+}
+
+function declararVariavel(nome, tipo, categoria = "var", extra = {})
+{
+  if(tabela_simbolo.existeNoEscopo(nome, escopo_atual))
+  {
+    erroSemantico(`identificador "${nome}" já declarado neste escopo`);
+    return null;
+  }
+
+  const registro = tabela_simbolo.inserir({ cadeia: nome, token: "identificador_valido", categoria, tipo, escopo: escopo_atual, extra });
+
+  if(categoria === "var" || categoria === "parametro")//WIP
+  {
+    registro.end_rel = proximoEndereco(escopo_atual);
+    gerarInstrucao("AMEM", 1);
+  }
+  return registro;
+}
+
+function buscarVariavel(nome)
+{
+  const registro = tabela_simbolo.buscar(nome, { escopo_atual });
+
+  if(!registro)
+  {
+    erroSemantico(`identificador "${nome}" não declarado`);
+    return null;
+  }
+
+  if(!["var", "parametro", "const"].includes(registro.categoria))
+  {
+    erroSemantico(`"${nome}" não pode ser usado como variável`);
+    return null;
+  }
+  
+  registro.utilizada = true;
+  return registro;
+}
+
+function verificarChamadaDeProcedimento(nome, argsTipos) {
+  const registro = tabela_simbolo.buscar(nome, { categoria: "proc", escopo_atual });
+
+  if(!registro)
+  {
+    erroSemantico(`procedimento "${nome}" não declarado`);
+    return;
+  }
+
+  if(registro.parametros === null)
+  {
+    argsTipos.forEach((tipo, i) => {
+      if(tipo !== "int" && tipo !== "boolean") erroSemantico(`argumento ${i + 1} de "${nome}" deve ser do tipo int ou boolean`);
+    });
+    return;
+  }
+
+  if(argsTipos.length !== registro.parametros.length)
+  {
+    erroSemantico(`número de argumentos incompatível em "${nome}" (esperado ${registro.parametros.length}, informado ${argsTipos.length})`);
+    return;
+  }
+
+  registro.parametros.forEach((param, i) => {
+    if(argsTipos[i] !== null && argsTipos[i] !== param.tipo)
+    {
+      erroSemantico(`parâmetro ${i + 1} de "${nome}" incompatível (esperado ${param.tipo}, informado ${argsTipos[i]})`);
+    }
+  });
+}
+
+function finalizarEscopoDeProcedimento()
+{//de novo, vejo que qualquer coisa que não seja C é tão prático
+  tabela_simbolo.tabela
+    .filter(r => r.escopo === escopo_atual && r.categoria === "var" && !r.utilizada)
+    .forEach(r => avisos.push(`Aviso: variável "${r.cadeia}" declarada e nunca utilizada`));
+  tabela_simbolo.removerEscopo(escopo_atual);
+  escopo_atual--;
+}
+
+function verificarNaoUtilizadasNoEscopo(escopo)
+{
+  tabela_simbolo.tabela
+    .filter(r => r.escopo === escopo && r.categoria === "var" && !r.utilizada)
+    .forEach(r => avisos.push(`Aviso: variável "${r.cadeia}" declarada e nunca utilizada`));
+}
+
+function nomeProcedimentoEhEsSaida(nome) {
+  return nome === "read" || nome === "write" || nome === "writeln";
+}
+
+function ntPrograma() {
+  console.log("------------------------");
+  console.log("<programa>");
+  console.log(tokenAtual());
+  let tokens_aceitos = ["program"];
+  let tokens_vazios = [];
+  if (tokens_aceitos.includes(tokenAtual())) {
     consumirToken("program");
-    ntIdentificador();
+    const nomePrograma = ntIdentificador();
+    tabela_simbolo.inserir({ cadeia: nomePrograma, token: "identificador_valido", categoria: "nome_prog", escopo: escopo_atual });
     consumirToken("ponto_e_virgula");
+    gerarInstrucao("INPP");
     ntBloco();
+    gerarInstrucao("PARA");
+    verificarNaoUtilizadasNoEscopo(escopo_atual);
     consumirToken("ponto_final");
+  }
+  else if (tokens_vazios.includes(tokenAtual())) {
+    console.log("Vazio");
+  }
+  else {
+    gerarErro(`ERRO sintatico: programa invalido`);
+  }
 }
 
 function ntBloco()
@@ -79,7 +295,7 @@ function ntBloco()
     console.log("------------------------");
     console.log("<bloco>");
     console.log(tokenAtual())
-    let tokens_aceitos = ["int", "boolean"];
+    let tokens_aceitos = ["int", "boolean", "procedure", "begin"];
     let tokens_vazios = [];
     if(tokens_aceitos.includes(tokenAtual()))
     {
@@ -103,11 +319,11 @@ function ntParte_de_declaracoes_de_variaveis()
     console.log("<parte_de_declaracoes_de_variaveis>");
     console.log(tokenAtual())
     let tokens_aceitos = ["int", "boolean"];
-    let tokens_vazios = [];
+    let tokens_vazios = ["procedure", "begin"];
     if(tokens_aceitos.includes(tokenAtual()))
     {
         ntDeclaracao_de_variavel1();
-        consumirToken("ponto_e_virgula")
+        consumirToken("ponto_e_virgula");
         ntDeclaracao_de_variavel2();   
     }
     else if(tokens_vazios.includes(tokenAtual()))
@@ -129,8 +345,9 @@ function ntDeclaracao_de_variavel1()
     let tokens_vazios = [];
     if(tokens_aceitos.includes(tokenAtual()))
     {
-        ntTipo();
-        ntLista_de_identificadores1();
+        const tipo = ntTipo();
+        const nomes = ntLista_de_identificadores1();
+        nomes.forEach(nome => declararVariavel(nome, tipo, "var"));
     }
     else if(tokens_vazios.includes(tokenAtual()))
     {
@@ -174,15 +391,17 @@ function ntIdentificador()
     let tokens_vazios = [];
     if(tokens_aceitos.includes(tokenAtual()))
     {
-        posicao++;
+      const nome_identificador = lexemaAtual();
+      posicao++;
+      return nome_identificador;
     }
     else if(tokens_vazios.includes(tokenAtual()))
     {
-        console.log("Vazio");
+      console.log("Vazio");
     }
     else
     {
-        gerarErro(`ERRO sintaxico: identificador invalido`);
+      gerarErro(`ERRO sintaxico: identificador invalido`);
     }
 }
 
@@ -192,11 +411,13 @@ function ntLista_de_identificadores1()
     console.log("<lista_de_identificadores1>");
     console.log(tokenAtual())
     let tokens_aceitos = ["identificador_valido"];
-    let tokens_vazios = ["int", "virgula", "ponto_e_virgula", "procedure", "begin"];
+    let tokens_vazios = [];
     if(tokens_aceitos.includes(tokenAtual()))
     {
-        ntIdentificador();
-        ntLista_de_identificadores2();
+        const nome = ntIdentificador();
+        const nomes = ntLista_de_identificadores2();
+        if(!nomes) return [nome];
+        return [nome, ...nomes];
     }
     else if(tokens_vazios.includes(tokenAtual()))
     {
@@ -214,12 +435,14 @@ function ntLista_de_identificadores2()
     console.log("<lista_de_identificadores2>");
     console.log(tokenAtual())
     let tokens_aceitos = ["virgula"];
-    let tokens_vazios = ["int", "ponto_e_virgula", "procedure", "begin", "dois_pontos"];
+    let tokens_vazios = ["int", "boolean", "ponto","ponto_e_virgula", "procedure", "begin", "dois_pontos"];
     if(tokens_aceitos.includes(tokenAtual()))
     {
         consumirToken("virgula");
-        ntIdentificador();
-        ntLista_de_identificadores2();
+        const nome = ntIdentificador();
+        const nomes = ntLista_de_identificadores2();
+        if(!nomes) return [nome];
+        return [nome, ...nomes];
     }
     else if(tokens_vazios.includes(tokenAtual()))
     {
@@ -243,10 +466,12 @@ function ntTipo()
         if(tokenAtual() == "int")
         {
             consumirToken("int");
+            return "int";
         }
         else
         {
             consumirToken("boolean");
+            return "boolean";
         }
     }
     else if(tokens_vazios.includes(tokenAtual()))
@@ -288,7 +513,7 @@ function ntDeclaracao_de_procedimento2()
     console.log("<declaracao_de_procedimento2>");
     console.log(tokenAtual())
     let tokens_aceitos = ["procedure"];
-    let tokens_vazios = [];
+    let tokens_vazios = ["ponto_e_virgula", "begin"];
     if(tokens_aceitos.includes(tokenAtual()))
     {
         ntDeclaracao_de_procedimento1();
@@ -315,10 +540,24 @@ function ntDeclaracao_de_procedimento1()
     if(tokens_aceitos.includes(tokenAtual()))
     {
         consumirToken("procedure");
-        ntIdentificador();
-        ntParametros_formais1();
+
+        const nome = ntIdentificador();
+        nota(`geração de código para o procedimento "${nome}" não é coberta, apenas a análise semântica foi realizada.`);
+        const registro = declararVariavel(nome, null, "proc", { parametros: [] });
+        escopo_atual++;
+        dentro_de_procedimento++;
+
+        const parametros = ntParametros_formais1();
+        if(registro)
+        {
+          registro.parametros = parametros;
+        }
+
         consumirToken("ponto_e_virgula")
         ntBloco();
+        
+        dentro_de_procedimento--;
+        finalizarEscopoDeProcedimento();
     }
     else if(tokens_vazios.includes(tokenAtual()))
     {
@@ -336,17 +575,20 @@ function ntParametros_formais1()
     console.log("<parametros_formais1>");
     console.log(tokenAtual())
     let tokens_aceitos = ["abre_parenteses"];
-    let tokens_vazios = [];
+    let tokens_vazios = ["ponto_e_virgula"];
     if(tokens_aceitos.includes(tokenAtual()))
     {
         consumirToken("abre_parenteses");
-        ntSecao_de_parametros_formais();
-        ntParametros_formais2();
+        const parametros1 = ntSecao_de_parametros_formais();
+        const parametros2 = ntParametros_formais2();
         consumirToken("fecha_parenteses");
+        if(!parametros2) return [...parametros1];
+        return [...parametros1, ...parametros2];
     }
     else if(tokens_vazios.includes(tokenAtual()))
     {
         console.log("Vazio");
+        return [];
     }
     else
     {
@@ -364,12 +606,15 @@ function ntParametros_formais2()
     if(tokens_aceitos.includes(tokenAtual()))
     {
         consumirToken("ponto_e_virgula");
-        ntSecao_de_parametros_formais();
-        ntParametros_formais2();
+        const parametros1 = ntSecao_de_parametros_formais();
+        const parametros2 = ntParametros_formais2();
+        if(!parametros2) return [...parametros1];
+        return [...parametros1, ...parametros2];
     }
     else if(tokens_vazios.includes(tokenAtual()))
     {
         console.log("Vazio");
+        return [];
     }
     else
     {
@@ -382,14 +627,20 @@ function ntSecaoDeParametrosFormais()
     console.log("------------------------");
     console.log("<secaoDeParametrosFormais>");
     console.log(tokenAtual())
-    let tokens_aceitos = ["var"];
-    let tokens_vazios = [];
+    let tokens_aceitos = ["var", "identificador_valido"];
+    let tokens_vazios = ["ponto_e_virgula", "fecha_parenteses"];
     if(tokens_aceitos.includes(tokenAtual()))
     {
-        ntVar();
-        ntLista_de_identificadores1();
+        const por_referencia = ntVar();
+        const nomes = ntLista_de_identificadores1();
         consumirToken("dois_pontos");
-        ntIdentificador();
+        const lexema_tipo = ntIdentificador();
+        const tipo = validarTipo(lexema_tipo);
+
+        return nomes
+          .map(nome => declararVariavel(nome, tipo, "par", { porReferencia }))
+          .filter(Boolean)
+          .map(reg => ({ nome: reg.cadeia, tipo: reg.tipo, porReferencia: reg.porReferencia }));
     }
     else if(tokens_vazios.includes(tokenAtual()))
     {
@@ -406,11 +657,19 @@ function ntVar()
     console.log("------------------------");
     console.log("<var>");
     console.log(tokenAtual())
-    let tokens_aceitos = ["var"];
+    let tokens_aceitos = ["var", "identificador_valido"];
     let tokens_vazios = [];
     if(tokens_aceitos.includes(tokenAtual()))
     {
-        consumirToken("var");
+        if (tokenAtual() === "var")
+        {
+          consumirToken("var");
+          return true;
+        }
+        else
+        {
+          return false;
+        }
     }
     else if(tokens_vazios.includes(tokenAtual()))
     {
@@ -475,7 +734,7 @@ function ntComando1()
     console.log("<comando1>");
     console.log(tokenAtual())
     let tokens_aceitos = ["begin", "identificador_valido", "if", "while"];
-    let tokens_vazios = ["end"];
+    let tokens_vazios = ["ponto_e_virgula", "end", "else"];//WIP2
     if(tokens_aceitos.includes(tokenAtual()))
     {
         if(tokenAtual() == tokens_aceitos[0])
@@ -483,24 +742,37 @@ function ntComando1()
             ntComando_composto1();
         }
         else if(tokenAtual() == tokens_aceitos[1])
-        {
-            ntIdentificador();
-            ntComando2();
+        { 
+            const nome = ntIdentificador();
+            ntComando2(nome);
         }
         else if(tokenAtual() == tokens_aceitos[2])
         {
             consumirToken("if");
-            ntExpressao1();
+            const tipo_condicao = ntExpressao1();
+            if (tipo_condicao && tipo_condicao !== "boolean")
+            {
+              erroSemantico("a expressão do \"if\" deve ser do tipo boolean");
+            }
             consumirToken("then");
+            const posDSVF = gerarInstrucao("DSVF", null);
             ntComando1();
-            ntElse();
+            ntElse(posDSVF);
         }
         else
         {
             consumirToken("while");
-            ntExpressao1();
+            const pos_inicio = gerarInstrucao("NADA");
+            const tipo_condicao = ntExpressao1();
+            if (tipo_condicao && tipo_condicao !== "boolean")
+            {
+              erroSemantico("a expressão do \"while\" deve ser do tipo boolean");
+            }
             consumirToken("do");
+            const pos_DSVF = gerarInstrucao("DSVF", null);
             ntComando1();
+            gerarInstrucao("DSVS", pos_inicio);
+            corrigirInstrucao(pos_DSVF, gerarInstrucao("NADA"));
         }
     }
     else if(tokens_vazios.includes(tokenAtual()))
@@ -513,7 +785,7 @@ function ntComando1()
     }
 }
 
-function ntComando2()
+function ntComando2(nome)
 {
     console.log("------------------------");
     console.log("<comando2>");
@@ -525,17 +797,47 @@ function ntComando2()
         if(tokenAtual() == tokens_aceitos[0])
         {
             consumirToken("abre_parenteses");
-            ntChamada_de_procedimento2();
+
+            const emLeituraAnterior = emLeitura;
+            const emEscritaAnterior = emEscrita;
+            if (nome === "read") emLeitura = true;
+            if (nome === "write" || nome === "writeln") emEscrita = true;
+            const tipos_args = ntChamada_de_procedimento2();
+      
+            emLeitura = emLeituraAnterior;
+            emEscrita = emEscritaAnterior;
+
+            verificarChamadaDeProcedimento(nome, tipos_args);
+
+            if (nome === "writeln") gerarInstrucao("IMPE");
+
+            if (!nomeProcedimentoEhEsSaida(nome))
+            {
+              nota(`chamada ao procedimento "${nome}" não gera código.`);
+            }
+            return;
         }
         else if(tokenAtual() == tokens_aceitos[1])
         {
+            const registro = buscarVariavel(nome);
             consumirToken("atribuicao");
-            ntExpressao1();
+            const tipoExpr = ntExpressao1();
+            if(registro && tipoExpr && registro.tipo !== tipoExpr)
+            {
+              erroSemantico(`atribuição incompatível: "${nome}" é ${registro.tipo}, expressão é ${tipoExpr}`);
+            }
+            if (registro && registro.end_rel !== undefined) gerarInstrucao("ARMZ", registro.end_rel);
+            return;
         }
     }
     else if(tokens_vazios.includes(tokenAtual()))
     {
         console.log("Vazio");
+        verificarChamadaDeProcedimento(nome, []);
+        if(!nomeProcedimentoEhEsSaida(nome))
+        {
+          nota(`chamada ao procedimento "${nome}" não gera código.`);
+        }
     }
     else
     {
@@ -543,7 +845,7 @@ function ntComando2()
     }
 }
 
-function ntAtribuicao()
+function ntAtribuicao()//Está na tabela do TCC, mas não é um comando, então não sei se deveria estar aqui
 {
     console.log("------------------------");
     console.log("<atribuicao>");
@@ -593,12 +895,14 @@ function ntChamada_de_procedimento2()
     console.log("------------------------");
     console.log("<chamada_de_procedimento2>");
     console.log(tokenAtual())
-    let tokens_aceitos = ["identificador_valido", "virgula", "abre_parenteses", "fecha_parenteses", "+", "-", "not", "=", "<>", ">", ">=", "<", "<="];
-    let tokens_vazios = ["ponto", "ponto_e_virgula", "procedure", "begin"];
+    let tokens_aceitos = ["identificador_valido", "numero", "virgula", "abre_parenteses", "fecha_parenteses", "+", "-", "not", "=", "<>", ">", ">=", "<", "<="];
+    let tokens_vazios = ["ponto", "ponto_e_virgula", "procedure", "begin", "end", "else"];
     if(tokens_aceitos.includes(tokenAtual()))
     {
-        ntLista_de_expressoes1();
+
+        const tipo = ntLista_de_expressoes1();
         consumirToken("fecha_parenteses");
+        return tipo;
     }
     else if(tokens_vazios.includes(tokenAtual()))
     {
@@ -635,7 +939,7 @@ function ntComando_condicional_1()
     }
 }
 
-function ntElse()
+function ntElse(posDSVF)
 {
     console.log("------------------------");
     console.log("<else>");
@@ -644,12 +948,16 @@ function ntElse()
     let tokens_vazios = ["ponto", "ponto_e_virgula", "begin", "procedure"];
     if(tokens_aceitos.includes(tokenAtual()))
     {
+        const posDSVS = gerarInstrucao("DSVS", null);
+        corrigirInstrucao(posDSVF, gerarInstrucao("NADA"));
         consumirToken("else");
         ntComando1();
+        corrigirInstrucao(posDSVS, gerarInstrucao("NADA"));
     }
     else if(tokens_vazios.includes(tokenAtual()))
     {
         console.log("Vazio");
+        corrigirInstrucao(posDSVF, gerarInstrucao("NADA"));
     }
     else
     {
@@ -690,8 +998,9 @@ function ntExpressao1()
     let tokens_vazios = ["then", "do", "]", "procedure", "begin", "ponto", "ponto_e_virgula", "virgula", "fecha_parenteses", "end", "else"];
     if(tokens_aceitos.includes(tokenAtual()))
     {
-        ntExpressao_simples1();
-        ntExpressao2();
+        const tipoEsq = ntExpressao_simples1();
+        const expressao = ntExpressao2(tipoEsq);
+        return expressao;
     }
     else if(tokens_vazios.includes(tokenAtual()))
     {
@@ -703,7 +1012,7 @@ function ntExpressao1()
     }
 }
 
-function ntExpressao2()
+function ntExpressao2(tipoEsq)
 {
     console.log("------------------------");
     console.log("<expressao2>");
@@ -712,12 +1021,19 @@ function ntExpressao2()
     let tokens_vazios = ["then", "do", "]", "procedure", "begin", "ponto", "ponto_e_virgula", "virgula", "fecha_parenteses", "end", "else"];
     if(tokens_aceitos.includes(tokenAtual()))
     {
-        ntRelacao();
-        ntExpressao_simples1();
+        const instrucao = ntRelacao();
+        const tipoDir = ntExpressao_simples1();
+        if(tipoEsq && tipoDir && tipoEsq !== tipoDir)
+        {
+          erroSemantico(`comparação entre tipos incompatíveis (${tipoEsq} e ${tipoDir})`);
+        }
+        gerarInstrucao(instrucao);
+        return "boolean";
     }
     else if(tokens_vazios.includes(tokenAtual()))
     {
         console.log("Vazio");
+        return tipoEsq;
     }
     else
     {
@@ -734,7 +1050,9 @@ function ntRelacao()
     let tokens_vazios = [];
     if(tokens_aceitos.includes(tokenAtual()))
     {
+        const t = tokenAtual();
         consumirToken(tokenAtual()); //Acho que funciona
+        return MAPA_RELACIONAL[t];
     }
     else if(tokens_vazios.includes(tokenAtual()))
     {
@@ -751,13 +1069,25 @@ function ntExpressao_simples1()
     console.log("------------------------");
     console.log("<expressao_simples1>");
     console.log(tokenAtual())
-    let tokens_aceitos = ["identificador_valido", "numero", "abre_parenteses", "+", "-"];
+    let tokens_aceitos = ["identificador_valido", "numero", "abre_parenteses", "+", "-", "not"];
     let tokens_vazios = ["=", "<>", ">", ">=", "<", "<=", "then", "do", "]", "ponto", "ponto_e_virgula", "procedure", "begin"];
     if(tokens_aceitos.includes(tokenAtual()))
     {
-        ntOp();
-        ntTermo1();
-        ntExpressao_simples2();
+        let unarioNegativo = false;
+        unarioNegativo = ntOp();
+        let tipo = ntTermo1();
+
+        if(unarioNegativo)
+        {
+          if(tipo && tipo !== "int")
+          {
+            erroSemantico('operador unário "-" requer operando do tipo int');
+          }
+          gerarInstrucao("INVR");
+        }
+
+        const expressao = ntExpressao_simples2(tipo);
+        return expressao;
     }
     else if(tokens_vazios.includes(tokenAtual()))
     {
@@ -778,7 +1108,9 @@ function ntOp()
     let tokens_vazios = ["numero", "not", "identificador_valido", "abre_parenteses"];
     if(tokens_aceitos.includes(tokenAtual()))
     {
-        consumirToken(tokenAtual()); //Mesma coisa, acho que funcione
+        const unarioNegativo = tokenAtual() === "-";
+        consumirToken(tokenAtual());
+        return unarioNegativo;
     }
     else if(tokens_vazios.includes(tokenAtual()))
     {
@@ -790,7 +1122,7 @@ function ntOp()
     }
 }
 
-function ntExpressao_simples2()
+function ntExpressao_simples2(tipoAcumulado)
 {
     console.log("------------------------");
     console.log("<expressao_simples2>");
@@ -800,8 +1132,23 @@ function ntExpressao_simples2()
     if(tokens_aceitos.includes(tokenAtual()))
     {
         ntOp2();
-        ntTermo1();
-        ntExpressao_simples2();
+        const tipoDir = ntTermo1();
+        const esperado = tokenAtual() === "or" ? "boolean" : "int";
+        if(tipoAcumulado && tipoAcumulado !== esperado)
+        {
+          erroSemantico(`operador "${tokenAtual()}" requer operandos do tipo ${esperado}`);
+        } 
+        else if(tipoDir && tipoDir !== esperado)
+        {
+          erroSemantico(`operador "${tokenAtual()}" requer operandos do tipo ${esperado}`);
+        }
+
+        if (tokenAtual() === "+") gerarInstrucao("SOMA");
+        else if (tokenAtual() === "-") gerarInstrucao("SUBT");
+        else gerarInstrucao("DISJ");
+
+        const expressao = ntExpressao_simples2(esperado);
+        return expressao;
     }
     else if(tokens_vazios.includes(tokenAtual()))
     {
@@ -843,8 +1190,9 @@ function ntTermo1()
     let tokens_vazios = [];
     if(tokens_aceitos.includes(tokenAtual()))
     {
-        ntFator();
-        ntTermo2();
+        const tipo = ntFator();
+        const expressao = ntTermo2(tipo);
+        return expressao;
     }
     else if(tokens_vazios.includes(tokenAtual()))
     {
@@ -856,7 +1204,7 @@ function ntTermo1()
     }
 }
 
-function ntTermo2()
+function ntTermo2(tipoAcumulado)
 {
     console.log("------------------------");
     console.log("<termo2>");
@@ -866,12 +1214,28 @@ function ntTermo2()
     if(tokens_aceitos.includes(tokenAtual()))
     {
         ntOp3();
-        ntFator();
-        ntTermo2();
+        const tipoDir = ntFator();
+        const esperado = tokenAtual() === "and" ? "boolean" : "int";
+        if(tipoAcumulado && tipoAcumulado !== esperado)
+        {
+          erroSemantico(`operador "${tokenAtual()}" requer operandos do tipo ${esperado}`);
+        } 
+        else if(tipoDir && tipoDir !== esperado)
+        {
+          erroSemantico(`operador "${tokenAtual()}" requer operandos do tipo ${esperado}`);
+        }
+
+        if (tokenAtual() === "*") Gerar("MULT");
+        else if (tokenAtual() === "/") Gerar("DIVI");
+        else Gerar("CONJ");
+
+        const expressao = ntTermo2(esperado);
+        return expressao;
     }
     else if(tokens_vazios.includes(tokenAtual()))
     {
         console.log("Vazio");
+        return tipoAcumulado;
     }
     else
     {
@@ -888,7 +1252,7 @@ function ntOp3()
     let tokens_vazios = [];
     if(tokens_aceitos.includes(tokenAtual()))
     {
-        consumirToken(tokenAtual()); //só para deixar marcado
+        consumirToken(tokenAtual());
     }
     else if(tokens_vazios.includes(tokenAtual()))
     {
@@ -911,22 +1275,33 @@ function ntFator()
     {
         if(tokenAtual() == tokens_aceitos[0])
         {
-            ntVariavel1();
+            const tipo = ntVariavel1();
+            return tipo;
         }
         else if(tokenAtual() == tokens_aceitos[1])
         {
             consumirToken("abre_parenteses");
-            ntExpressao1();
+            const tipo = ntExpressao1();
             consumirToken("fecha_parenteses");
+            return tipo;
         }
         else if(tokenAtual() == tokens_aceitos[2])
         {
+            const valor = lexemaAtual();
             consumirToken("numero");
+            gerarInstrucao("CRCT", Number(valor));
+            return "int";
         }
         else
         {
             consumirToken("not");
-            ntFator();
+            const tipo = ntFator();
+            if(tipo && tipo !== "boolean")
+            {
+              erroSemantico('operador "not" requer operando do tipo boolean');
+            }
+            gerarInstrucao("NEGA");
+            return "boolean";
         }
     }
     else if(tokens_vazios.includes(tokenAtual()))
@@ -948,8 +1323,22 @@ function ntVariavel1()
     let tokens_vazios = [];
     if(tokens_aceitos.includes(tokenAtual()))
     {
-        ntIdentificador();
-        ntVariavel2();
+        const nome = ntIdentificador();
+        const registro = buscarVariavel(nome);
+
+        if(registro)
+        {
+          if (emLeitura && (registro.categoria === "var" || registro.categoria === "par") && registro.end_rel !== undefined) {
+            gerarInstrucao("LEIT");
+            gerarInstrucao("ARMZ", registro.end_rel);
+          } else if (registro.categoria === "const") {
+            gerarInstrucao("CRCT", registro.valor ? 1 : 0);
+          } else if (registro.categoria === "var" || registro.categoria === "par") {
+            gerarInstrucao("CRVL", registro.end_rel);
+          }
+        }
+
+        return ntVariavel2( registro ? registro.tipo : null);
     }
     else if(tokens_vazios.includes(tokenAtual()))
     {
@@ -961,7 +1350,7 @@ function ntVariavel1()
     }
 }
 
-function ntVariavel2()
+function ntVariavel2(tipoBase)
 {
     console.log("------------------------");
     console.log("<variavel2>");
@@ -970,7 +1359,7 @@ function ntVariavel2()
     let tokens_vazios = ["*", "/", "and", "ponto", "ponto_e_virgula", "procedure", "begin", "virgula", "fecha_parenteses", "end", "else", "then", "do", "+", "-", "]", "=", "<>", ">", ">=", "<", "<=", "atribuicao"];
     if(tokens_aceitos.includes(tokenAtual()))
     {
-        if(tokenAtual() == tokens_aceitos[0])
+        if(tokenAtual() == tokens_aceitos[0])//WIP
         {
             consumirToken("abre_parenteses");
             ntLista_de_expressoes1();
@@ -979,8 +1368,11 @@ function ntVariavel2()
         else if(tokenAtual() == tokens_aceitos[1])
         {
             consumirToken("[");
-            ntExpressao1();
+            const tipo = ntExpressao1();
+            if(tipo && tipo !== "int") erroSemantico('índice de vetor deve ser do tipo "int"');
             consumirToken("]");
+            nota('acesso a vetor ("[...]") não gera código, apenas a análise semântica é realizada.');
+            return tipoBase;
         }
         else
         {
@@ -1004,16 +1396,19 @@ function ntLista_de_expressoes1()
     console.log("------------------------");
     console.log("<lista_de_expressoes1>");
     console.log(tokenAtual())
-    let tokens_aceitos = ["identificador_valido", "virgula", "abre_parenteses", "+", "-", "]", "=", "<>", ">", ">=", "<", "<="];
+    let tokens_aceitos = ["identificador_valido", "numero", "virgula", "abre_parenteses", "not", "+", "-", "]", "=", "<>", ">", ">=", "<", "<="];
     let tokens_vazios = ["fecha_parenteses"];
     if(tokens_aceitos.includes(tokenAtual()))
     {
-        ntExpressao1();
-        ntLista_de_expressoes2();
+        const tipo = ntExpressao1();
+        if(emEscrita) gerarInstrucao("IMPR");
+        const resto = ntLista_de_expressoes2();
+        return [tipo, ...resto];
     }
     else if(tokens_vazios.includes(tokenAtual()))
     {
         console.log("Vazio");
+        return [];
     }
     else
     {
@@ -1031,12 +1426,16 @@ function ntLista_de_expressoes2()
     if(tokens_aceitos.includes(tokenAtual()))
     {
         consumirToken("virgula");
-        ntExpressao1();
-        ntLista_de_expressoes2();
+        const tipo = ntExpressao1();
+        if(emEscrita) gerarInstrucao("IMPR");
+        const resto = ntLista_de_expressoes2();
+        if(!resto) return [tipo];
+        return [tipo, ...resto];
     }
     else if(tokens_vazios.includes(tokenAtual()))
     {
         console.log("Vazio");
+        return [];
     }
     else
     {
@@ -1044,45 +1443,55 @@ function ntLista_de_expressoes2()
     }
 }
 
-/*
-function nt()
-{
-    console.log("------------------------");
-    console.log("<>");
-    console.log(tokenAtual())
-    let tokens_aceitos = [];
-    let tokens_vazios = [];
-    if(tokens_aceitos.includes(tokenAtual()))
+export function geradorDeCodigo(arrayTokens) {
+  fila = enfileirarTokens(arrayTokens);
+  posicao = 0;
+  escopo_atual = 0;
+  erros = [];
+  avisos = [];
+  notas = [];
+  vetor_codigo = [];
+  enderecos = {};
+  dentro_de_procedimento = 0;
+  tabela_simbolo = new TabelaSimbolos();
+  inicializarTabelaSimbolos();
+
+  try {
+    ntPrograma();
+    if(tokenAtual() !== "$")
     {
-        
+      erroSintatico("tokens sobrando após o fim do programa");
     }
-    else if(tokens_vazios.includes(tokenAtual()))
+  } catch (e) {
+    if(e instanceof ErroSintatico)
     {
-        console.log("Vazio");
+      erros.push(e.message);
     }
     else
     {
-        gerarErro(`ERRO sintaxico:  invalido`);
+      throw e;
     }
+  }
+
+  return {
+    codigoMEPA: vetor_codigo,
+    tabelaDeSimbolos: tabela_simbolo.tabela.filter(r => r.escopo >= 0),
+    erros,
+    avisos,
+    notas
+  };
 }
-*/
 
-// principal
+export function analisadorSemantico(arrayTokens) {
+  const { tabelaDeSimbolos, erros, avisos } = geradorDeCodigo(arrayTokens);
+  return { tabelaDeSimbolos, erros, avisos };
+}
 
-export function analisadorSintaxico(arrayTokens){
-    fila = enfileirarTokens(arrayTokens);
-    posicao = 0;
-
-    exibirErroSintaxico("");
-    
-    try {
-        ntPrograma();
- 
-        if (tokenAtual() !== "$") {
-            gerarErro("ERRO sintaxico: tokens sobrando apos o fim do programa");
-        }
-    } catch (e) {
-        if (!(e instanceof ErroSintaxico)) throw e; //o erro não foi sintático
-    }
-    
+export function formatarCodigoMEPA(codigoMEPA) {
+  return codigoMEPA
+    .map((instr, idx) => {
+      const args = [instr.par1, instr.par2].filter(v => v !== undefined).join(" ");
+      return `${String(idx).padStart(3, " ")}: ${instr.codigo}${args ? " " + args : ""}`;
+    })
+    .join("\n");
 }
