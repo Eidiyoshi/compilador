@@ -1226,9 +1226,9 @@ function ntTermo2(tipoAcumulado)
           erroSemantico(`operador "${tokenAtual()}" requer operandos do tipo ${esperado}`);
         }
 
-        if (tokenAtual() === "*") Gerar("MULT");
-        else if (tokenAtual() === "/") Gerar("DIVI");
-        else Gerar("CONJ");
+        if (tokenAtual() === "*") gerarInstrucao("MULT");
+        else if (tokenAtual() === "/") gerarInstrucao("DIVI");
+        else gerarInstrucao("CONJ");
 
         const expressao = ntTermo2(esperado);
         return expressao;
