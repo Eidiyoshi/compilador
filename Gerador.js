@@ -1132,6 +1132,7 @@ function ntExpressao_simples2(tipoAcumulado)
     let tokens_vazios = ["ponto", "ponto_e_virgula", "procedure", "begin", "virgula", "abre_parenteses", "fecha_parenteses", "end", "else", "then", "do", "]", "=", "<>", ">", ">=", "<", "<="];
     if(tokens_aceitos.includes(tokenAtual()))
     {
+        const token = tokenAtual();
         ntOp2();
         const tipoDir = ntTermo1();
         const esperado = tokenAtual() === "or" ? "boolean" : "int";
@@ -1144,8 +1145,8 @@ function ntExpressao_simples2(tipoAcumulado)
           erroSemantico(`operador "${tokenAtual()}" requer operandos do tipo ${esperado}`);
         }
 
-        if (tokenAtual() === "+") gerarInstrucao("SOMA");
-        else if (tokenAtual() === "-") gerarInstrucao("SUBT");
+        if (token === "+") gerarInstrucao("SOMA");
+        else if (token === "-") gerarInstrucao("SUBT");
         else gerarInstrucao("DISJ");
 
         const expressao = ntExpressao_simples2(esperado);
@@ -1214,6 +1215,7 @@ function ntTermo2(tipoAcumulado)
     let tokens_vazios = ["ponto", "ponto_e_virgula", "procedure", "begin", "virgula", "fecha_parenteses", "end", "else", "then", "do", "+", "-", "]", "=", "<>", ">", ">=", "<", "<="];
     if(tokens_aceitos.includes(tokenAtual()))
     {
+        const token = tokenAtual();
         ntOp3();
         const tipoDir = ntFator();
         const esperado = tokenAtual() === "and" ? "boolean" : "int";
@@ -1226,8 +1228,8 @@ function ntTermo2(tipoAcumulado)
           erroSemantico(`operador "${tokenAtual()}" requer operandos do tipo ${esperado}`);
         }
 
-        if (tokenAtual() === "*") gerarInstrucao("MULT");
-        else if (tokenAtual() === "/") gerarInstrucao("DIVI");
+        if (token === "*") gerarInstrucao("MULT");
+        else if (token === "/") gerarInstrucao("DIVI");
         else gerarInstrucao("CONJ");
 
         const expressao = ntTermo2(esperado);
