@@ -2,6 +2,7 @@
  * Algumas observações:
  *  - Foi criado um writeln para que os exemplos da aula funcionem, mas não há slides cobrindo a implementação do writeln.
  *     Então foi suposto que o writeln funciona como o write, mas com uma quebra de linha no final (comando IMPE).
+ *  - Conforme o que foi dito em aula, a geração de código para procedimentos não foi implementada, apenas a análise semântica.
  *
  */
 
