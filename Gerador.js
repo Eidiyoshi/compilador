@@ -79,7 +79,7 @@ function erroSemantico(msg)
   erros.push(`Erro semântico próximo de "${lexemaAtual()}": ${msg}`);
 }
 
-function gerarNota(msg)
+function nota(msg)
 {
   notas.push(`Nota (geração de código) próximo de "${lexemaAtual()}": ${msg}`);
 }
@@ -182,7 +182,7 @@ function declararVariavel(nome, tipo, categoria = "var", extra = {})
 
   const registro = tabela_simbolo.inserir({ cadeia: nome, token: "identificador_valido", categoria, tipo, escopo: escopo_atual, extra });
 
-  if(categoria === "var" || categoria === "parametro")//WIP
+  if(categoria === "var" || categoria === "par")//WIP
   {
     registro.end_rel = proximoEndereco(escopo_atual);
     gerarInstrucao("AMEM", 1);
@@ -575,7 +575,7 @@ function ntParametros_formais1()
     if(tokens_aceitos.includes(tokenAtual()))
     {
         consumirToken("abre_parenteses");
-        const parametros1 = ntSecao_de_parametros_formais();
+        const parametros1 = ntSecaoDeParametrosFormais();
         const parametros2 = ntParametros_formais2();
         consumirToken("fecha_parenteses");
         if(!parametros2) return [...parametros1];
@@ -602,7 +602,7 @@ function ntParametros_formais2()
     if(tokens_aceitos.includes(tokenAtual()))
     {
         consumirToken("ponto_e_virgula");
-        const parametros1 = ntSecao_de_parametros_formais();
+        const parametros1 = ntSecaoDeParametrosFormais();
         const parametros2 = ntParametros_formais2();
         if(!parametros2) return [...parametros1];
         return [...parametros1, ...parametros2];
