@@ -32,6 +32,7 @@
         <div class="tabs">
             <button class="tab-btn active" onclick="openTab(event, 'Tab1')">Analisador Léxico</button>
             <button class="tab-btn" onclick="openTab(event, 'Tab2')">Analisador Sintático</button>
+            <button class="tab-btn" onclick="openTab(event, 'Tab3')">Analisador Semântico</button>
         </div>
 
         <div id="Tab1" class="tab-content active">
@@ -78,6 +79,30 @@
             </section>
 
             <section class="text" id="checkSintaxico"></section>
+        </div>
+
+        <div id="Tab3" class="tab-content">
+            <section class="result">
+                <h2>Tabela de Símbolos</h2>
+
+                <table id="tokensTableSemantico">
+                    <thead>
+                        <tr>
+                            <th>Identificador</th>
+                            <th>Token</th>
+                            <th>Categoria</th>
+                            <th>Tipo</th>
+                            <th>Valor</th>
+                            <th>Escopo</th>
+                            <th>Utilizada</th>
+                            <th>Endereço</th>
+                            <th>Parâmetros</th>
+                            <th>Por Referência</th>
+                        </tr>
+                    </thead>
+                    <tbody></tbody>
+                </table>
+            </section>
         </div>
     </div>
 

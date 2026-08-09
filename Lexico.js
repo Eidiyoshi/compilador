@@ -4,7 +4,7 @@ import { isDigit, isLetter, isSpace, isMathOperator, isRelationalOperator, isInA
 // deletar eventualmente
 import { iniciarAnalise, proximoPasso, analisadorSintaxico, pilha, fila, ultimoPasso } from "./Sintaxico.js";
 
-import { geradorDeCodigo } from "./Gerador.js"
+import { analisadorSemantico, geradorDeCodigo } from "./Gerador.js"
 
 //Funcoes
 function pushToken(array, token, current_string, current_line, beginning_of_token, line_position)
@@ -391,10 +391,11 @@ function identifyToken(text) {
             checkIfEnded(current_token, current_string, real_result, errors, current_line, beginning_of_token, line_position, max_length);
         }
         //errors;
-        errors.pop();
+        //errors.pop();
         //real_result
         fillErrors(errors);
         fillTable(real_result);
+        //fillTableSemantico(real_result);
         //usar o errors para ver os erros
     
     //nao faco ideia doq isso faz, mas aparentemente é necessario pra ler o arquivo
@@ -410,6 +411,10 @@ function identifyToken(text) {
     
     iniciarAnalise(real_result);
     atualizarParser();
+    
+    const resultado_semantico = analisadorSemantico(real_result);
+    //fillErrorsSemantico(resultado_semantico.erros); implementar depois
+    fillTableSemantico(resultado_semantico.tabelaDeSimbolos);
 
     console.log("Gerando código\n\n\n");
     const resultado = geradorDeCodigo(real_result);
@@ -473,6 +478,55 @@ function fillErrors(errors) {
             <td class="error">${t.linha}</td>
             <td class="error">${t.comeco}</td>
             <td class="error">${t.fim}</td>
+        `;
+
+        tbody.appendChild(tr);
+    });
+}
+
+//fillTable para a análise semântica
+function fillTableSemantico(real_result) {
+    const tbody = document.querySelector("#tokensTableSemantico tbody");
+
+    real_result.forEach(t => {
+        const tr = document.createElement("tr");
+
+        tr.innerHTML = `
+            <td>${t.cadeia}</td>
+            <td>${t.token}</td>
+            <td>${t.categoria}</td>
+            <td>${t.tipo}</td>
+            <td>${t.valor}</td>
+            <td>${t.escopo}</td>
+            <td>${t.utilizada}</td>
+            <td>${t.end_rel}</td>
+            <td>${t.parametros}</td>
+            <td>${t.porReferencia}</td>
+        `;
+
+        tbody.appendChild(tr);
+    });
+}
+
+//fillErrors para a análise semântica
+function fillErrorsSemantico(errors) {
+    const tbody = document.querySelector("#tokensTableSemantico tbody");
+    tbody.innerHTML = ""; //limpa tabela antes
+
+    errors.forEach(t => {
+        const tr = document.createElement("tr");
+
+        tr.innerHTML = `
+            <td class="error">${t.cadeia}</td>
+            <td class="error">${t.token}</td>
+            <td class="error">${t.categoria}</td>
+            <td class="error">${t.tipo}</td>
+            <td class="error">${t.valor}</td>
+            <td class="error">${t.escopo}</td>
+            <td class="error">${t.utilizada}</td>
+            <td class="error">${t.end_rel}</td>
+            <td class="error">${t.parametros}</td>
+            <td class="error">${t.porReferencia}</td>
         `;
 
         tbody.appendChild(tr);
