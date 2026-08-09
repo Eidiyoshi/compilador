@@ -68,7 +68,9 @@ function RetirarAmbos(){
 }
 
 function declararErroSintaxico(erroString){
-    document.getElementById("checkSintaxico").textContent = erroString;
+    const erro = document.getElementById("checkSintaxico");
+    erro.textContent = erroString;
+    erro.classList.add("ativo");
 }
 
 function listaDeIdentificadores2(){
@@ -759,7 +761,7 @@ export function iniciarAnalise(arrayTokens){
     terminou = false;
     ultimoPasso = "";
 
-    declararErroSintaxico("");
+    document.getElementById("checkSintaxico").classList.remove("ativo");
 
     pilha.push("<programa>");
 }

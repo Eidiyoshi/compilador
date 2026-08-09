@@ -395,7 +395,6 @@ function identifyToken(text) {
         //real_result
         fillErrors(errors);
         fillTable(real_result);
-        //fillTableSemantico(real_result);
         //usar o errors para ver os erros
     
     //nao faco ideia doq isso faz, mas aparentemente é necessario pra ler o arquivo

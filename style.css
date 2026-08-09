@@ -284,3 +284,16 @@ tbody tr:nth-child(even) {
     white-space: pre-wrap;
     word-break: break-word;
 }
+
+.syntax-error {
+    display: none;
+    margin-top: 20px;
+    padding: 12px 15px;
+    border-radius: 6px;
+    background-color: #ffe5e5;
+    color: #b30000;
+}
+
+.syntax-error.ativo {
+    display: block;
+}
