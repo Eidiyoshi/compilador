@@ -19,6 +19,7 @@ var fila = [];
 var posicao = 0;
 var escopo_atual = 0;
 var tabela_simbolo = null;
+var copia_tabela_simbolo = null;
 var erros = [];
 var avisos = [];
 var notas = [];
@@ -114,6 +115,17 @@ function inicializarTabelaSimbolos()
 
   tabela_simbolo.inserir({ cadeia: "true", token: "identificador_valido", categoria: "const", tipo: "boolean", valor: true, escopo: -1 });
   tabela_simbolo.inserir({ cadeia: "false", token: "identificador_valido", categoria: "const", tipo: "boolean", valor: false, escopo: -1 });
+
+  ["int", "boolean"].forEach(t =>
+    copia_tabela_simbolo.inserir({ cadeia: t, token: t, categoria: "tipo", escopo: -1 })
+  );
+
+  ["read", "write", "writeln"].forEach(p =>
+    copia_tabela_simbolo.inserir({ cadeia: p, token: "identificador_valido", categoria: "proc", escopo: -1, extra: { parametros: null } })
+  );
+
+  copia_tabela_simbolo.inserir({ cadeia: "true", token: "identificador_valido", categoria: "const", tipo: "boolean", valor: true, escopo: -1 });
+  copia_tabela_simbolo.inserir({ cadeia: "false", token: "identificador_valido", categoria: "const", tipo: "boolean", valor: false, escopo: -1 });
 }
 
 function emitirInstrucao(codigo, valor = null) {
@@ -181,6 +193,7 @@ function declararVariavel(nome, tipo, categoria = "var", extra = {})
   }
 
   const registro = tabela_simbolo.inserir({ cadeia: nome, token: "identificador_valido", categoria, tipo, escopo: escopo_atual, extra });
+  copia_tabela_simbolo.inserir({ cadeia: nome, token: "identificador_valido", categoria, tipo, escopo: escopo_atual, extra });
 
   if(categoria === "var" || categoria === "parametro")//WIP
   {
@@ -271,6 +284,7 @@ function ntPrograma() {
     consumirToken("program");
     const nomePrograma = ntIdentificador();
     tabela_simbolo.inserir({ cadeia: nomePrograma, token: "identificador_valido", categoria: "nome_prog", escopo: escopo_atual });
+    copia_tabela_simbolo.inserir({ cadeia: nomePrograma, token: "identificador_valido", categoria: "nome_prog", escopo: escopo_atual });
     consumirToken("ponto_e_virgula");
     gerarInstrucao("INPP");
     ntBloco();
@@ -1473,10 +1487,11 @@ export function geradorDeCodigo(arrayTokens) {
 
   return {
     codigoMEPA: vetor_codigo,
-    tabelaDeSimbolos: tabela_simbolo.tabela,
-    erros,
-    avisos,
-    notas
+    tabela_de_simbolos: tabela_simbolo.tabela,
+    copia_tabela_de_simbolos: copia_tabela_simbolo,
+    erros: erros,
+    avisos: avisos,
+    notas: notas
   };
 }
 
