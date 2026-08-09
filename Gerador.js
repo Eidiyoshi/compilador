@@ -1164,14 +1164,14 @@ function ntExpressao_simples2(tipoAcumulado)
         const token = tokenAtual();
         ntOp2();
         const tipoDir = ntTermo1();
-        const esperado = tokenAtual() === "or" ? "boolean" : "int";
+        const esperado = token === "or" ? "boolean" : "int";
         if(tipoAcumulado && tipoAcumulado !== esperado)
         {
-          erroSemantico(`operador "${tokenAtual()}" requer operandos do tipo ${esperado}`);
+          erroSemantico(`operador "${token}" requer operandos do tipo ${esperado}`);
         } 
         else if(tipoDir && tipoDir !== esperado)
         {
-          erroSemantico(`operador "${tokenAtual()}" requer operandos do tipo ${esperado}`);
+          erroSemantico(`operador "${token}" requer operandos do tipo ${esperado}`);
         }
 
         if (token === "+") gerarInstrucao("SOMA");
@@ -1248,14 +1248,14 @@ function ntTermo2(tipoAcumulado)
         const token = tokenAtual();
         ntOp3();
         const tipoDir = ntFator();
-        const esperado = tokenAtual() === "and" ? "boolean" : "int";
+        const esperado = token === "and" ? "boolean" : "int";
         if(tipoAcumulado && tipoAcumulado !== esperado)
         {
-          erroSemantico(`operador "${tokenAtual()}" requer operandos do tipo ${esperado}`);
+          erroSemantico(`operador "${token}" requer operandos do tipo ${esperado}`);
         } 
         else if(tipoDir && tipoDir !== esperado)
         {
-          erroSemantico(`operador "${tokenAtual()}" requer operandos do tipo ${esperado}`);
+          erroSemantico(`operador "${token}" requer operandos do tipo ${esperado}`);
         }
 
         if (token === "*") gerarInstrucao("MULT");
