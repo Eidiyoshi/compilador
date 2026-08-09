@@ -400,8 +400,10 @@ function identifyToken(text) {
     
     //nao faco ideia doq isso faz, mas aparentemente é necessario pra ler o arquivo
     
+    console.log("Erros léxicos")
     console.log(errors);
-
+    
+    console.log("Resultado léxico")
     console.log(real_result);
 
     //analisadorSintaxico(real_result)
@@ -409,15 +411,18 @@ function identifyToken(text) {
 
     //console.log(real_result.join(" "))
     
+    const copia = structuredClone(real_result);
+
     iniciarAnalise(real_result);
     atualizarParser();
     
-    const resultado_semantico = analisadorSemantico(real_result);
+    //O gerador já retorna as coisas da semântica
+    const resultado_semantico = analisadorSemantico(copia);
     //fillErrorsSemantico(resultado_semantico.erros); implementar depois
-    fillTableSemantico(resultado_semantico.tabelaDeSimbolos);
+    fillTableSemantico(resultado_semantico.copia_tabela_de_simbolos);
 
     console.log("Gerando código\n\n\n");
-    const resultado = geradorDeCodigo(real_result);
+    const resultado = geradorDeCodigo(copia);
     console.log(resultado.codigoMEPA);
 
     //return real_result;

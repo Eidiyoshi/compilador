@@ -77,6 +77,7 @@ function gerarErro(msg) {
 
 function erroSemantico(msg)
 {
+  console.log(`Erro semântico detectado: ${msg}`)
   erros.push(`Erro semântico próximo de "${lexemaAtual()}": ${msg}`);
 }
 
@@ -234,9 +235,21 @@ function verificarChamadaDeProcedimento(nome, argsTipos) {
 
   if(registro.parametros === null)
   {
+    console.log(`tipos:\n${argsTipos}\n\n!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!`)
     argsTipos.forEach((tipo, i) => {
       if(tipo !== "int" && tipo !== "boolean") erroSemantico(`argumento ${i + 1} de "${nome}" deve ser do tipo int ou boolean`);
     });
+    if(nomeProcedimentoEhEsSaida(nome))
+    {
+      const tipos_validos = argsTipos.filter(t => t === "int" || t === "boolean");
+      const tipo_referencia = tipos_validos[0];
+      const tipo_diferente = argsTipos.findIndex((t, i) => (t === "int" || t === "boolean") && t !== tipo_referencia);
+
+      if(tipo_diferente !== -1)
+      {
+        erroSemantico(`argumentos de "${nome}" devem ser todos do mesmo tipo: argumento 1 é ${tipo_referencia}, argumento ${tipo_diferente + 1} é ${argsTipos[tipo_diferente]}`);
+      }
+    }
     return;
   }
 
@@ -834,7 +847,14 @@ function ntComando2(nome)
             const tipoExpr = ntExpressao1();
             if(registro && tipoExpr && registro.tipo !== tipoExpr)
             {
-              erroSemantico(`atribuição incompatível: "${nome}" é ${registro.tipo}, expressão é ${tipoExpr}`);
+              if(registro.tipo == "int")
+              {
+                avisos.push(`Aviso: atribuição de tipos diferentes "${nome}" é ${registro.tipo}, expressão é ${tipoExpr}`)
+              }
+              else if(registro.tipo == "boolean")
+              {
+                erroSemantico(`atribuição incompatível: "${nome}" é ${registro.tipo}, expressão é ${tipoExpr}`);
+              }
             }
             if (registro && registro.end_rel !== undefined) gerarInstrucao("ARMZ", registro.end_rel);
             return;
@@ -1164,6 +1184,7 @@ function ntExpressao_simples2(tipoAcumulado)
     else if(tokens_vazios.includes(tokenAtual()))
     {
         console.log("Vazio");
+        return tipoAcumulado;
     }
     else
     {
@@ -1221,7 +1242,7 @@ function ntTermo2(tipoAcumulado)
     console.log("<termo2>");
     console.log(tokenAtual())
     let tokens_aceitos = ["*", "div", "and"];
-    let tokens_vazios = ["ponto", "ponto_e_virgula", "procedure", "begin", "virgula", "fecha_parenteses", "end", "else", "then", "do", "+", "-", "]", "=", "<>", ">", ">=", "<", "<="];
+    let tokens_vazios = ["ponto", "ponto_e_virgula", "procedure", "begin", "virgula", "fecha_parenteses", "end", "else", "then", "do", "+", "-", "]", "=", "<>", ">", ">=", "<", "<=", "or"];
     if(tokens_aceitos.includes(tokenAtual()))
     {
         const token = tokenAtual();
@@ -1368,7 +1389,7 @@ function ntVariavel2(tipoBase)
     console.log("<variavel2>");
     console.log(tokenAtual())
     let tokens_aceitos = ["abre_parenteses", "["];
-    let tokens_vazios = ["*", "div", "and", "ponto", "ponto_e_virgula", "procedure", "begin", "virgula", "fecha_parenteses", "end", "else", "then", "do", "+", "-", "]", "=", "<>", ">", ">=", "<", "<=", "atribuicao"];
+    let tokens_vazios = ["*", "div", "and", "ponto", "ponto_e_virgula", "procedure", "begin", "virgula", "fecha_parenteses", "end", "else", "then", "do", "+", "-", "]", "=", "<>", ">", ">=", "<", "<=", "atribuicao", "or"];
     if(tokens_aceitos.includes(tokenAtual()))
     {
         if(tokenAtual() == tokens_aceitos[0])//WIP
@@ -1396,6 +1417,7 @@ function ntVariavel2(tipoBase)
     else if(tokens_vazios.includes(tokenAtual()))
     {
         console.log("Vazio");
+        return tipoBase;
     }
     else
     {
@@ -1457,6 +1479,10 @@ function ntLista_de_expressoes2()
 
 export function geradorDeCodigo(arrayTokens) {
   fila = enfileirarTokens(arrayTokens);
+
+  console.log("Tokens")
+  console.log(fila)
+
   posicao = 0;
   escopo_atual = 0;
   erros = [];
@@ -1466,6 +1492,7 @@ export function geradorDeCodigo(arrayTokens) {
   enderecos = {};
   dentro_de_procedimento = 0;
   tabela_simbolo = new TabelaSimbolos();
+  copia_tabela_simbolo = new TabelaSimbolos();
   inicializarTabelaSimbolos();
 
   try {
@@ -1485,10 +1512,25 @@ export function geradorDeCodigo(arrayTokens) {
     }
   }
 
+  console.log("Código de montagem")
+  console.log(vetor_codigo)
+
+  console.log("Tabela")
+  console.log(copia_tabela_simbolo)
+
+  console.log("Erros")
+  console.log(erros)
+
+  console.log("Avisos")
+  console.log(avisos)
+
+  console.log("Notas")
+  console.log(notas)
+
   return {
     codigoMEPA: vetor_codigo,
     tabela_de_simbolos: tabela_simbolo.tabela,
-    copia_tabela_de_simbolos: copia_tabela_simbolo,
+    copia_tabela_de_simbolos: copia_tabela_simbolo.tabela,
     erros: erros,
     avisos: avisos,
     notas: notas
@@ -1496,6 +1538,6 @@ export function geradorDeCodigo(arrayTokens) {
 }
 
 export function analisadorSemantico(arrayTokens) {
-  const { tabelaDeSimbolos, erros, avisos } = geradorDeCodigo(arrayTokens);
-  return { tabelaDeSimbolos, erros, avisos };
+  const { copia_tabela_de_simbolos, erros, avisos } = geradorDeCodigo(arrayTokens);
+  return { copia_tabela_de_simbolos, erros, avisos };
 }
