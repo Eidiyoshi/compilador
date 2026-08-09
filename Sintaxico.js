@@ -68,7 +68,18 @@ function RetirarAmbos(){
 }
 
 function declararErroSintaxico(erroString){
-    document.getElementById("checkSintaxico").textContent = erroString;
+    const erroSintatico = document.getElementById("checkSintaxico");
+    const erroSintaticoContainer = document.getElementById("erroSintaticoContainer");
+
+    if (erroString) {
+        erroSintatico.innerHTML = erroString;
+        erroSintatico.classList.add("ativo");
+        erroSintaticoContainer.style.display = "block";
+    } else {
+        erroSintatico.innerHTML = "";
+        erroSintatico.classList.remove("ativo");
+        erroSintaticoContainer.style.display = "none";
+    }
 }
 
 function listaDeIdentificadores2(){
