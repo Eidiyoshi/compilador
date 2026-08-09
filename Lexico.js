@@ -417,8 +417,13 @@ function identifyToken(text) {
     
     //O gerador já retorna as coisas da semântica
     const resultado_semantico = analisadorSemantico(copia);
-    //fillErrorsSemantico(resultado_semantico.erros); implementar depois
     fillTableSemantico(resultado_semantico.copia_tabela_de_simbolos);
+    //Tava usando isso aqui só pra testar mesmo
+    //resultado_semantico.erros.push("erro teste");
+    //resultado_semantico.avisos.push("aviso teste");
+    //resultado_semantico.notas.push("nota teste");
+    declararErroSemantico(resultado_semantico.erros);
+    declararAvisoSemantico(resultado_semantico.avisos);
 
     console.log("Gerando código\n\n\n");
     const resultado = geradorDeCodigo(copia);
@@ -445,6 +450,8 @@ function readTextFile(event){
 // funcao generica para ler o texto no inputField
 document.querySelector('#startButton').addEventListener('click', () => {
     var textInput = document.getElementById("inputField").value
+    document.querySelector(".tabs").classList.remove("hidden");
+    document.getElementById("Tab1").classList.remove("initial-hidden");
     identifyToken(textInput)
 });
 
@@ -512,29 +519,26 @@ function fillTableSemantico(real_result) {
     });
 }
 
-//fillErrors para a análise semântica
-function fillErrorsSemantico(errors) {
-    const tbody = document.querySelector("#tokensTableSemantico tbody");
-    tbody.innerHTML = ""; //limpa tabela antes
+function declararErroSemantico(erroArray){
+    const erroSemantico = document.getElementById("erroSemantico");
+    if (erroArray.length > 0) {
+        erroSemantico.innerHTML = erroArray.map(e => `<div>${e}</div>`).join("");
+        erroSemantico.classList.add("ativo");
+        erroSemanticoContainer.style.display = "block";
+    } else {
+        erroSemanticoContainer.style.display = "none";
+    }
+}
 
-    errors.forEach(t => {
-        const tr = document.createElement("tr");
-
-        tr.innerHTML = `
-            <td class="error">${t.cadeia}</td>
-            <td class="error">${t.token}</td>
-            <td class="error">${t.categoria}</td>
-            <td class="error">${t.tipo}</td>
-            <td class="error">${t.valor}</td>
-            <td class="error">${t.escopo}</td>
-            <td class="error">${t.utilizada}</td>
-            <td class="error">${t.end_rel}</td>
-            <td class="error">${t.parametros}</td>
-            <td class="error">${t.porReferencia}</td>
-        `;
-
-        tbody.appendChild(tr);
-    });
+function declararAvisoSemantico(avisoArray){
+    const avisoSemantico = document.getElementById("avisoSemantico");
+    if(avisoArray.length > 0) {
+        avisoSemantico.innerHTML = avisoArray.map(e => `<div>${e}</div>`).join("");
+        avisoSemantico.classList.add("ativo");
+        avisoSemanticoContainer.style.display = "block";
+    } else {
+        avisoSemanticoContainer.style.display = "none";
+    }
 }
 
 //Essa parte aqui tem as funções de exibição da análise sintática

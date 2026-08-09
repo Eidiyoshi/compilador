@@ -68,9 +68,18 @@ function RetirarAmbos(){
 }
 
 function declararErroSintaxico(erroString){
-    const erro = document.getElementById("checkSintaxico");
-    erro.textContent = erroString;
-    erro.classList.add("ativo");
+    const erroSintatico = document.getElementById("checkSintaxico");
+    const erroSintaticoContainer = document.getElementById("erroSintaticoContainer");
+
+    if (erroString) {
+        erroSintatico.innerHTML = erroString;
+        erroSintatico.classList.add("ativo");
+        erroSintaticoContainer.style.display = "block";
+    } else {
+        erroSintatico.innerHTML = "";
+        erroSintatico.classList.remove("ativo");
+        erroSintaticoContainer.style.display = "none";
+    }
 }
 
 function listaDeIdentificadores2(){
@@ -761,7 +770,7 @@ export function iniciarAnalise(arrayTokens){
     terminou = false;
     ultimoPasso = "";
 
-    document.getElementById("checkSintaxico").classList.remove("ativo");
+    declararErroSintaxico("");
 
     pilha.push("<programa>");
 }

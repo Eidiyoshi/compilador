@@ -29,13 +29,13 @@
             </section>
         </section>
 
-        <div class="tabs">
+        <div class="tabs hidden">
             <button class="tab-btn active" onclick="openTab(event, 'Tab1')">Analisador Léxico</button>
             <button class="tab-btn" onclick="openTab(event, 'Tab2')">Analisador Sintático</button>
             <button class="tab-btn" onclick="openTab(event, 'Tab3')">Analisador Semântico</button>
         </div>
 
-        <div id="Tab1" class="tab-content active">
+        <div id="Tab1" class="tab-content active initial-hidden">
             <section class="result">
                 <h2>Tabela de Símbolos</h2>
 
@@ -78,7 +78,10 @@
                 <button id="runAllButton">Executar tudo</button>
             </section>
 
-            <section id="checkSintaxico" class="syntax-error"></section>
+            <section id="erroSintaticoContainer" class="result">
+                <h2>Erros</h2>
+                <section id="checkSintaxico" class="syntax-semantic-error"></section>
+            </section>
         </div>
 
         <div id="Tab3" class="tab-content">
@@ -102,6 +105,16 @@
                     </thead>
                     <tbody></tbody>
                 </table>
+            </section>
+
+            <section id="erroSemanticoContainer" class="result" style="display: none;">
+                <h2>Erros</h2>
+                <section id="erroSemantico" class="syntax-semantic-error"></section>
+            </section>
+
+            <section id="avisoSemanticoContainer" class="result" style="display: none;">
+                <h2>Avisos</h2>
+                <section id="avisoSemantico" class="warning"></section>
             </section>
         </div>
     </div>

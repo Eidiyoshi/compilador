@@ -154,6 +154,14 @@ tbody tr:nth-child(even) {
     border-bottom: 2px solid #dcdcdc;
 }
 
+.tabs.hidden {
+    display: none;
+}
+
+.tab-content.initial-hidden {
+    display: none;
+}
+
 .tab-btn {
     background: #d9dde3;
     color: #333;
@@ -285,15 +293,28 @@ tbody tr:nth-child(even) {
     word-break: break-word;
 }
 
-.syntax-error {
+.syntax-semantic-error {
     display: none;
     margin-top: 20px;
-    padding: 12px 15px;
+    padding: 18px 20px;
     border-radius: 6px;
     background-color: #ffe5e5;
     color: #b30000;
 }
 
-.syntax-error.ativo {
+.syntax-semantic-error.ativo {
+    display: block;
+}
+
+.warning {
+    display: none;
+    margin-top: 20px;
+    padding: 18px 20px;
+    border-radius: 6px;
+    background-color: #FFF3CD;
+    color: #856404;
+}
+
+.warning.ativo {
     display: block;
 }
