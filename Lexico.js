@@ -5,6 +5,7 @@ import { isDigit, isLetter, isSpace, isMathOperator, isRelationalOperator, isInA
 import { iniciarAnalise, proximoPasso, analisadorSintaxico, pilha, fila, ultimoPasso } from "./Sintaxico.js";
 
 import { analisadorSemantico, geradorDeCodigo } from "./Gerador.js"
+import { interpretador } from "./Interpretador.js";
 
 //Funcoes
 function pushToken(array, token, current_string, current_line, beginning_of_token, line_position)
@@ -417,6 +418,18 @@ function identifyToken(text) {
     
     //O gerador já retorna as coisas da semântica
     const resultado_semantico = analisadorSemantico(copia);
+
+    //não exibe a aba de geração de código se tiver erro semântico
+    const tab4 = document.getElementById("Tab4");
+    const botaoTab4 = document.querySelector('.tab-btn[onclick*="Tab4"]');
+    if(resultado_semantico.erros.length > 0) {
+        tab4.style.display = "none";
+        botaoTab4.style.display = "none";
+    } else {
+        tab4.style.display = "";
+        botaoTab4.style.display = "";
+    }
+
     fillTableSemantico(resultado_semantico.copia_tabela_de_simbolos);
     //Tava usando isso aqui só pra testar mesmo
     //resultado_semantico.erros.push("erro teste");
@@ -424,12 +437,14 @@ function identifyToken(text) {
     //resultado_semantico.notas.push("nota teste");
     declararErroSemantico(resultado_semantico.erros);
     declararAvisoSemantico(resultado_semantico.avisos);
+    declararNotaSemantica(resultado_semantico.notas);
 
     console.log("Gerando código\n\n\n");
     const resultado = geradorDeCodigo(copia);
     console.log(resultado.codigoMEPA);
-
     exibirCodigoMEPA(resultado.codigoMEPA);
+
+    interpretador(resultado.codigoMEPA, escreverTerminal, lerTerminal);
     //return real_result;
 }
 
@@ -450,6 +465,12 @@ function readTextFile(event){
 
 // funcao generica para ler o texto no inputField
 document.querySelector('#startButton').addEventListener('click', () => {
+    //limpa o terminal do interpretador
+    terminalMEPA.value = "";
+    aguardandoEntrada = false;
+    resolverEntrada = null;
+    inicioEntrada = 0;
+
     var textInput = document.getElementById("inputField").value
     document.querySelector(".tabs").classList.remove("hidden");
     document.getElementById("Tab1").classList.remove("initial-hidden");
@@ -534,11 +555,22 @@ function declararErroSemantico(erroArray){
 function declararAvisoSemantico(avisoArray){
     const avisoSemantico = document.getElementById("avisoSemantico");
     if(avisoArray.length > 0) {
-        avisoSemantico.innerHTML = avisoArray.map(e => `<div>${e}</div>`).join("");
+        avisoSemantico.innerHTML = avisoArray.map(a => `<div>${a}</div>`).join("");
         avisoSemantico.classList.add("ativo");
         avisoSemanticoContainer.style.display = "block";
     } else {
         avisoSemanticoContainer.style.display = "none";
+    }
+}
+
+function declararNotaSemantica(notaArray){
+    const notaSemantica = document.getElementById("notaSemantica");
+    if(notaArray.length > 0) {
+        notaSemantica.innerHTML = notaArray.map(n => `<div>${n}</div>`).join("");
+        notaSemantica.classList.add("ativo");
+        notaSemanticaContainer.style.display = "block";
+    } else {
+        notaSemanticaContainer.style.display = "none";
     }
 }
 
@@ -593,6 +625,153 @@ document.getElementById("runAllButton").addEventListener("click",()=>{
 });
 
 
+//exibe o código num textarea como o do editor
+function exibirCodigoMEPA(vetor_codigo) {
+    const codigoMEPA = document.getElementById("codigoMEPA");
+    const linesMEPA = document.getElementById("linesMEPA");
+
+    codigoMEPA.value = vetor_codigo.map(instrucao => {
+        if(instrucao.valor !== undefined) {
+            return `${instrucao.codigo} ${instrucao.valor}`;
+        }
+        return instrucao.codigo;
+    }).join("\n");
+    codigoMEPA.readOnly = true;
+
+    const totalLines = vetor_codigo.length;;
+    let html = "";
+
+    for(let i = 1; i <= totalLines; i++) {
+        html += `<div>${i}</div>`;
+    }
+
+    linesMEPA.innerHTML = html;
+}
+
+
+//terminal com input e output do interpretador
+const terminalMEPA = document.getElementById("terminalMEPA");
+
+let aguardandoEntrada = false;
+let resolverEntrada = null;
+let inicioEntrada = 0;
+
+function escreverTerminal(texto) {
+    terminalMEPA.value += String(texto);
+    terminalMEPA.scrollTop = terminalMEPA.scrollHeight;
+    //cursor sempre no final quando o programa escreve
+    terminalMEPA.setSelectionRange(
+        terminalMEPA.value.length,
+        terminalMEPA.value.length
+    );
+}
+
+function lerTerminal() {
+    aguardandoEntrada = true;
+    //a partir daqui começa a região que o usuário pode editar
+    inicioEntrada = terminalMEPA.value.length;
+    terminalMEPA.focus();
+    terminalMEPA.setSelectionRange(
+        inicioEntrada,
+        inicioEntrada
+    );
+    return new Promise(resolve => { resolverEntrada = resolve; });
+}
+
+//impede o usuário de colocar o cursor antes da região de entrada
+terminalMEPA.addEventListener("select", () => {
+    if(!aguardandoEntrada) {
+        terminalMEPA.setSelectionRange(
+            terminalMEPA.value.length,
+            terminalMEPA.value.length
+        );
+        return;
+    }
+    if(terminalMEPA.selectionStart < inicioEntrada) {
+        terminalMEPA.setSelectionRange(
+            inicioEntrada,
+            inicioEntrada
+        );
+    }
+});
+
+//impede seleção/posicionamento fora da região editável
+terminalMEPA.addEventListener("mouseup", () => {
+    if(!aguardandoEntrada) {
+        terminalMEPA.setSelectionRange(
+            terminalMEPA.value.length,
+            terminalMEPA.value.length
+        );
+        return;
+    }
+    if(terminalMEPA.selectionStart < inicioEntrada) {
+        terminalMEPA.setSelectionRange(
+            inicioEntrada,
+            inicioEntrada
+        );
+    }
+});
+
+
+//controla teclado
+terminalMEPA.addEventListener("keydown", event => {
+    if(!aguardandoEntrada) {
+        event.preventDefault();
+        return;
+    }
+    //não pode subir para linhas anteriores
+    if(event.key === "ArrowUp") {
+        event.preventDefault();
+        return;
+    }
+    //não pode descer para outras linhas
+    if(event.key === "ArrowDown") {
+        event.preventDefault();
+        return;
+    }
+    //não pode voltar para o texto do programa
+    if(event.key === "ArrowLeft" && terminalMEPA.selectionStart <= inicioEntrada) {
+        event.preventDefault();
+        terminalMEPA.setSelectionRange(
+            inicioEntrada,
+            inicioEntrada
+        );
+        return;
+    }
+    // Não pode apagar o texto do programa
+    if(event.key === "Backspace" && terminalMEPA.selectionStart <= inicioEntrada) {
+        event.preventDefault();
+        return;
+    }
+    if(event.key === "Delete" && terminalMEPA.selectionStart < inicioEntrada) {
+        event.preventDefault();
+        return;
+    }
+    //home não pode levar para o começo do textarea
+    if(event.key === "Home") {
+        event.preventDefault();
+        terminalMEPA.setSelectionRange(
+            inicioEntrada,
+            inicioEntrada
+        );
+        return;
+    }
+    // enter confirma a entrada
+    if(event.key === "Enter") {
+        event.preventDefault();
+        const entrada = terminalMEPA.value.substring(inicioEntrada).trim();
+        aguardandoEntrada = false;
+        terminalMEPA.value += "\n";
+        if(resolverEntrada !== null) {
+            resolverEntrada(entrada);
+            resolverEntrada = null;
+        }
+        inicioEntrada = terminalMEPA.value.length;
+        terminalMEPA.scrollTop = terminalMEPA.scrollHeight;
+    }
+});
+
+
 window.openTab = function(evt, tabName) {
     let tabcontent = document.getElementsByClassName("tab-content");
     let tablinks = document.getElementsByClassName("tab-btn");
@@ -636,27 +815,3 @@ updateLines();
 
 input.addEventListener('change', readTextFile, false)
 
-function exibirCodigoMEPA(vetor_codigo) {
-    const codigoMEPA = document.getElementById("codigoMEPA");
-    const linesMEPA = document.getElementById("linesMEPA");
-
-    codigoMEPA.value = vetor_codigo
-        .map(instrucao => {
-            if (instrucao.valor !== undefined) {
-                return `${instrucao.codigo} ${instrucao.valor}`;
-            }
-
-            return instrucao.codigo;
-        })
-        .join("\n");
-    codigoMEPA.readOnly = true;
-
-    const totalLines = vetor_codigo.length;;
-    let html = "";
-
-    for (let i = 1; i <= totalLines; i++) {
-        html += `<div>${i}</div>`;
-    }
-
-    linesMEPA.innerHTML = html;
-}

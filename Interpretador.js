@@ -1,6 +1,6 @@
 const limite_de_passos = 100000;
 
-export function interpretador(codigoMEPA) {
+export async function interpretador(codigoMEPA, escrever, ler) {
 
     const D = [];
     let s;
@@ -11,6 +11,7 @@ export function interpretador(codigoMEPA) {
         if(i > limite_de_passos)
         {
             console.log("Limite de passos excedido. O programa pode estar em loop infinito.");
+            escrever("Limite de passos excedido. O programa pode estar em loop infinito.");
             break;
         }
 
@@ -201,26 +202,34 @@ export function interpretador(codigoMEPA) {
         else if(instrucao.codigo === "LEIT")//WIP falta fazer a entrada do usuário
         {
             console.log("Entre com um inteiro:");
+            escrever("Entre com um inteiro:\n");
+            const valor = await ler();
             s++;
-            D[s] = parseInt(prompt("Digite um valor: "));
+            //D[s] = parseInt(prompt("Digite um valor: "));
+            D[s] = parseInt(String(valor).trim(), 10);;
             i++;
         }
         else if(instrucao.codigo === "LECH")//também não tem no LALG (baseado no TCC), mas está no slide
         {
             console.log("Entre com um caractere:");
+            escrever("Entre com um caractere: ");
+            const valor = await ler();
             s++;
-            D[s] = prompt("Digite um valor: ");
+            //D[s] = prompt("Digite um valor: ");
+            D[s] = valor;
             i++;
         }
         else if(instrucao.codigo === "IMPR")//WIP falta fazer a saída
         {
             console.log(D[s]);
+            escrever(D[s] + "\n");
             s--;
             i++;
         }
         else if(instrucao.codigo === "IMPC")//também não tem no LALG (baseado no TCC), mas está no slide
         {
             console.log(D[s]);
+            escrever(D[s] + "\n");
             s--;
             i++;
         }
@@ -248,6 +257,7 @@ export function interpretador(codigoMEPA) {
         else if(instrucao.codigo === "PARA")
         {
             console.log("Execução encerrada com sucesso");
+            escrever("Execução encerrada com sucesso")
             break;
         }
     }

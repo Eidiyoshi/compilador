@@ -25,7 +25,7 @@
             </section>
 
             <section class="button">
-                <button id="startButton">Analisar código</button>
+                <button id="startButton">Compilar</button>
             </section>
         </section>
 
@@ -108,28 +108,45 @@
                 </table>
             </section>
 
-            <section id="erroSemanticoContainer" class="result" style="display: none;">
+            <section id="erroSemanticoContainer">
                 <h2>Erros</h2>
                 <section id="erroSemantico" class="syntax-semantic-error"></section>
             </section>
 
-            <section id="avisoSemanticoContainer" class="result" style="display: none;">
+            <section id="avisoSemanticoContainer">
                 <h2>Avisos</h2>
                 <section id="avisoSemantico" class="warning"></section>
+            </section>
+
+            <section id="notaSemanticaContainer">
+                <h2>Notas</h2>
+                <section id="notaSemantica" class="note"></section>
             </section>
         </div>
 
         <div id="Tab4" class="tab-content">
-            <section class="result">
-                <h2>Código de Montagem</h2>
+            <div class="codigo-interpretador">
 
-                <section class="code-editor">
-                    <div class="lines-wrapper">
-                        <div class="line-numbers" id="linesMEPA"></div>
-                    </div>
-                    <textarea id="codigoMEPA"></textarea>
+                <section class="painel-mepa">
+                    <h2>Código de Montagem</h2>
+
+                    <section class="code-editor">
+                        <div class="lines-wrapper">
+                            <div class="line-numbers" id="linesMEPA"></div>
+                        </div>
+
+                        <textarea id="codigoMEPA"></textarea>
+                    </section>
                 </section>
-            </section>
+
+                <section class="painel-mepa">
+                    <h2>Interpretador</h2>
+
+                    <section class="code-editor">
+                        <textarea id="terminalMEPA"></textarea>
+                    </section>
+                </section>
+            </div>
         </div>
     </div>
 

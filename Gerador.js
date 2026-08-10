@@ -1538,6 +1538,6 @@ export function geradorDeCodigo(arrayTokens) {
 }
 
 export function analisadorSemantico(arrayTokens) {
-  const { copia_tabela_de_simbolos, erros, avisos } = geradorDeCodigo(arrayTokens);
-  return { copia_tabela_de_simbolos, erros, avisos };
+  const { copia_tabela_de_simbolos, erros, avisos, notas } = geradorDeCodigo(arrayTokens);
+  return { copia_tabela_de_simbolos, erros, avisos, notas };
 }

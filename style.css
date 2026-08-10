@@ -97,7 +97,7 @@ h2 {
 }
 
 button {
-    background: #333;
+    background: #3d3d3d;
     color: white;
     border: none;
     padding: 12px 20px;
@@ -319,6 +319,19 @@ tbody tr:nth-child(even) {
     display: block;
 }
 
+.note {
+    display: none;
+    margin-top: 20px;
+    padding: 18px 20px;
+    border-radius: 6px;
+    background-color: #e7f1ff;
+    color: #245a8d;
+}
+
+.note.ativo {
+    display: block;
+}
+
 #codigoMEPA {
     flex: 1;
     background: #eef2f7;
@@ -334,4 +347,60 @@ tbody tr:nth-child(even) {
     overflow: auto;
     white-space: pre;
     tab-size: 4;
+}
+
+#terminalMEPA {
+    width: 100%;
+    height: 100%;
+    min-height: 0;
+    box-sizing: border-box;
+    padding: 18px;
+    background-color: #3d3d3d;
+    color: white;
+    border: none;
+    outline: none;
+    font-family: "Courier New", Consolas, monospace;
+    font-size: 15px;
+    line-height: 1.6;
+    resize: none;
+    white-space: pre-wrap;
+    overflow-wrap: break-word;
+}
+
+#terminalMEPA:focus {
+    border-color: #555;
+    box-shadow: 0 0 0 2px rgba(100, 100, 100, 0.15);
+}
+
+#terminalMEPA::-webkit-scrollbar {
+    width: 10px;
+}
+
+#terminalMEPA::-webkit-scrollbar-track {
+    background: #181818;
+    border-radius: 8px;
+}
+
+#terminalMEPA::-webkit-scrollbar-thumb {
+    background: #444;
+    border-radius: 8px;
+}
+
+#terminalMEPA::-webkit-scrollbar-thumb:hover {
+    background: #555;
+}
+
+.codigo-interpretador {
+    display: flex;
+    gap: 20px;
+    align-items: flex-start;
+}
+
+.painel-mepa:first-child {
+    flex: 0 0 33%;
+}
+
+.painel-mepa:last-child {
+    flex: 1;
+    min-width: 0;
 }
