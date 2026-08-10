@@ -21,7 +21,7 @@
                 <div class="lines-wrapper">
                     <div class="line-numbers" id="lines"></div>
                 </div>
-                <textarea name="inputField" id="inputField"></textarea>
+                <textarea id="inputField"></textarea>
             </section>
 
             <section class="button">
@@ -33,6 +33,7 @@
             <button class="tab-btn active" onclick="openTab(event, 'Tab1')">Analisador Léxico</button>
             <button class="tab-btn" onclick="openTab(event, 'Tab2')">Analisador Sintático</button>
             <button class="tab-btn" onclick="openTab(event, 'Tab3')">Analisador Semântico</button>
+            <button class="tab-btn" onclick="openTab(event, 'Tab4')">Geração de Código</button>
         </div>
 
         <div id="Tab1" class="tab-content active initial-hidden">
@@ -115,6 +116,19 @@
             <section id="avisoSemanticoContainer" class="result" style="display: none;">
                 <h2>Avisos</h2>
                 <section id="avisoSemantico" class="warning"></section>
+            </section>
+        </div>
+
+        <div id="Tab4" class="tab-content">
+            <section class="result">
+                <h2>Código de Montagem</h2>
+
+                <section class="code-editor">
+                    <div class="lines-wrapper">
+                        <div class="line-numbers" id="linesMEPA"></div>
+                    </div>
+                    <textarea id="codigoMEPA"></textarea>
+                </section>
             </section>
         </div>
     </div>

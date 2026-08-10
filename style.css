@@ -318,3 +318,20 @@ tbody tr:nth-child(even) {
 .warning.ativo {
     display: block;
 }
+
+#codigoMEPA {
+    flex: 1;
+    background: #eef2f7;
+    color: #222;
+    border: none;
+    outline: none;
+    padding: 10px 12px;
+    resize: none;
+    font-family: monospace;
+    font-size: 14px;
+    line-height: 20px;
+    box-sizing: border-box;
+    overflow: auto;
+    white-space: pre;
+    tab-size: 4;
+}

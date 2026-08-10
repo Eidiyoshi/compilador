@@ -429,6 +429,7 @@ function identifyToken(text) {
     const resultado = geradorDeCodigo(copia);
     console.log(resultado.codigoMEPA);
 
+    exibirCodigoMEPA(resultado.codigoMEPA);
     //return real_result;
 }
 
@@ -634,3 +635,28 @@ updateLines();
 
 
 input.addEventListener('change', readTextFile, false)
+
+function exibirCodigoMEPA(vetor_codigo) {
+    const codigoMEPA = document.getElementById("codigoMEPA");
+    const linesMEPA = document.getElementById("linesMEPA");
+
+    codigoMEPA.value = vetor_codigo
+        .map(instrucao => {
+            if (instrucao.valor !== undefined) {
+                return `${instrucao.codigo} ${instrucao.valor}`;
+            }
+
+            return instrucao.codigo;
+        })
+        .join("\n");
+    codigoMEPA.readOnly = true;
+
+    const totalLines = vetor_codigo.length;;
+    let html = "";
+
+    for (let i = 1; i <= totalLines; i++) {
+        html += `<div>${i}</div>`;
+    }
+
+    linesMEPA.innerHTML = html;
+}
