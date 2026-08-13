@@ -665,6 +665,7 @@ function construirTabelaSintaxica(){
     tabelaSintatica["<termo2>"]["*"] = termo2
     tabelaSintatica["<termo2>"]["/"] = termo2
     tabelaSintatica["<termo2>"]["and"] = termo2
+    tabelaSintatica["<termo2>"]["or"] = Vazio //MUDEI
     
     tabelaSintatica["<op3>"] = {}
     tabelaSintatica["<op3>"]["*"] = pushMult
@@ -695,6 +696,7 @@ function construirTabelaSintaxica(){
     tabelaSintatica["<variavel2>"]["*"] = Vazio
     tabelaSintatica["<variavel2>"]["/"] = Vazio
     tabelaSintatica["<variavel2>"]["and"] = Vazio
+    tabelaSintatica["<variavel2>"]["or"] = Vazio //MUDEI
     tabelaSintatica["<variavel2>"]["atribuicao"] = Vazio
     tabelaSintatica["<variavel2>"]["+"] = Vazio
     tabelaSintatica["<variavel2>"]["-"] = Vazio

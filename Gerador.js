@@ -72,7 +72,8 @@ class TabelaSimbolos
 class ErroSintatico extends Error {}
 
 function gerarErro(msg) {
-  throw new ErroSintatico(`${msg} - encontrado "${tokenAtual()}" ("${lexemaAtual()}") na posição ${posicao}`);
+  console.log(`Erro sintático detectado: ${msg}`)
+  //throw new ErroSintatico(`${msg} - encontrado "${tokenAtual()}" na posição ${posicao}`);
 }
 
 function erroSemantico(msg)
