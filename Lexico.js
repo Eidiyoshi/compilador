@@ -72,8 +72,8 @@ function identifyToken(text) {
             }
             else if(current_char === "{")
             {
-                beginning_of_comment_position = line_position;
-                beginning_of_comment_line = current_line;
+                var beginning_of_comment_position = line_position;
+                var beginning_of_comment_line = current_line;
                 if(current_token !== "")
                 {
                     checkIfEnded(current_token, current_string, real_result, errors, current_line, beginning_of_token, line_position, max_length)
